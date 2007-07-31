@@ -28,7 +28,11 @@ Games::NES::Emulator - An object-oriented NES (6502) emulator
 
 =head1 WARNING
 
+This code doesn't really do anything yet. 
+
 =head1 DESCRIPTION
+
+=head1 RATIONALE
 
 =head1 METHODS
 
@@ -45,12 +49,20 @@ sub new {
     return $self;
 }
 
+=head2 load_rom( $filename )
+
+=cut
+
 sub load_rom {
     my $self     = shift;
     my $filename = shift;
 
     $self->rom( Games::NES::ROM->new( $filename ) );
 }
+
+=head2 run()
+
+=cut
 
 sub run {
     my $self = shift;
