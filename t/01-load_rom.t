@@ -4,7 +4,7 @@ my $rom;
 
 BEGIN {
     $rom = $ENV{ TEST_ROM };
-    plan skip_all => 'No ROM specified in $ENV{ TEST_ROM}' unless $rom;
+    plan skip_all => 'No ROM specified in $ENV{ TEST_ROM }' unless $rom;
     plan tests => 3;
 }
 

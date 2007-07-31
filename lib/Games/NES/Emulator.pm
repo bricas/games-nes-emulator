@@ -1,4 +1,4 @@
-packages Games::NES::Emulator;
+package Games::NES::Emulator;
 
 use strict;
 use warnings;
@@ -42,7 +42,7 @@ This code doesn't really do anything yet.
 
 sub new {
     my $class = shift;
-    my $self  = $class::SUPER->new( @_ );
+    my $self  = $class->SUPER::new( @_ );
 
     $self->cpu( Games::NES::Emulator::CPU->new )->init;
 
