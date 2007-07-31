@@ -3,6 +3,16 @@ package Games::NES::Emulator::APU;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Games::NES::Emulator::APU - NES Audio Processing Unit
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
 =head1 AUTHOR
 
 Brian Cassidy E<lt>bricas@cpan.orgE<gt>

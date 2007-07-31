@@ -5,6 +5,20 @@ use warnings;
 
 use base qw( CPU::Emulator::6502 );
 
+=head1 NAME
+
+Games::NES::Emulator::CPU - NES Central Processing Unit
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 init()
+
+=cut
+
 sub init {
 }
 

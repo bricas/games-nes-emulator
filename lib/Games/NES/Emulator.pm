@@ -14,6 +14,28 @@ our $VERSION = '0.01';
 
 __PACKAGE__->mk_accessors( qw( rom cpu ) );
 
+=head1 NAME
+
+Games::NES::Emulator - An object-oriented NES (6502) emulator
+
+=head1 SYNOPSIS
+
+    use Games::NES::Emulator;
+    
+    my $emu = Games::NES::Emulator->new;
+    $emu->load_rom( 'mario.nes' );
+    $emu->run;
+
+=head1 WARNING
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 new( )
+
+=cut
+
 sub new {
     my $class = shift;
     my $self  = $class::SUPER->new( @_ );
@@ -32,7 +54,8 @@ sub load_rom {
 
 sub run {
     my $self = shift;
-    die "not implemented"
+    die 'No ROM loaded.' unless $self->rom;
+    die 'Not implemented!'
 }
 
 =head1 AUTHOR

@@ -12,6 +12,18 @@ __PACKAGE__->mk_accessors(
     )
 );
 
+=head1 NAME
+
+CPU::Emulator::6502 - Class representing a 6502 CPU
+
+=head1 SYNOPSIS
+
+=head1 WARNING
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
 =head1 AUTHOR
 
 Brian Cassidy E<lt>bricas@cpan.orgE<gt>
