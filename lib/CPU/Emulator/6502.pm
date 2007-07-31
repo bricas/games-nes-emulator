@@ -18,8 +18,6 @@ CPU::Emulator::6502 - Class representing a 6502 CPU
 
 =head1 SYNOPSIS
 
-=head1 WARNING
-
 =head1 DESCRIPTION
 
 =head1 METHODS
