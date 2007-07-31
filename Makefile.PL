@@ -5,6 +5,7 @@ all_from 'lib/Games/NES/Emulator.pm';
 
 requires 'Games::NES::ROM';
 requires 'Test::More';
+requires 'Class::Accessor::Fast';
 
 auto_install;
 WriteAll;
