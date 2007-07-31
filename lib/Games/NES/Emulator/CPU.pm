@@ -1,16 +1,12 @@
-package CPU::Emulator::6502;
+package Games::NES::Emulator::CPU;
 
 use strict;
 use warnings;
 
-use base qw( Class::Accessor::Fast );
+use base qw( CPU::Emulator::6502 );
 
-__PACKAGE__->mk_accessors(
-    qw(
-        registers memory interrupt_line
-        toggle frame_counter cycle_counter
-    )
-);
+sub init {
+}
 
 =head1 AUTHOR
 
@@ -26,6 +22,8 @@ it under the same terms as Perl itself.
 =head1 SEE ALSO
 
 =over 4 
+
+=item * L<CPU::Emulator::6502>
 
 =item * L<Games::NES::Emulator>
 
