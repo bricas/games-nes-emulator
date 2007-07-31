@@ -28,15 +28,31 @@ Games::NES::Emulator - An object-oriented NES (6502) emulator
 
 =head1 WARNING
 
-This code doesn't really do anything yet. 
+Don't get too excited -- this code doesn't really do anything yet. Don't
+complain to me that "Blaster Master" isn't working. It's not ready yet.
 
 =head1 DESCRIPTION
 
+Games::Emulator::NES contains a set of modules to emulate a classic NES
+gaming machine.
+
 =head1 RATIONALE
+
+I've always been interested in hardware emulation. I grew up playing the NES,
+so I figured it would be a decent place to start. Over the last year I've
+written some (non-functioning) code based on some freely available emulators
+on the web. Hopefully by putting the skeleton of the code online, it will spur
+me on to continue the development.
+
+As for choosing Perl for the emulation language, Perl is what I'm most
+comfortable with, and I don't particularly care about speed -- yet. Perhaps
+some bits can be rewritten in XS, but I'll cross that bridge when i get to it.
 
 =head1 METHODS
 
 =head2 new( )
+
+Create a new instance of the emulator. Initializes the CPU.
 
 =cut
 
@@ -51,6 +67,8 @@ sub new {
 
 =head2 load_rom( $filename )
 
+Loads the rom from C<$filename>.
+
 =cut
 
 sub load_rom {
@@ -60,7 +78,9 @@ sub load_rom {
     $self->rom( Games::NES::ROM->new( $filename ) );
 }
 
-=head2 run()
+=head2 run( )
+
+Begins execution of the code found in the ROM.
 
 =cut
 
