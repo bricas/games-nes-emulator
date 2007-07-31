@@ -5,7 +5,7 @@ use warnings;
 
 =head1 NAME
 
-Games::NES::Emulator::APU - NES Picture Processing Unit
+Games::NES::Emulator::PPU - NES Picture Processing Unit
 
 =head1 SYNOPSIS
 
