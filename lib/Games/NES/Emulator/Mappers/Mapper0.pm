@@ -3,7 +3,7 @@ package Games::NES::Emulator::Mappers::Mapper0;
 use strict;
 use warnings;
 
-use base qw( Games::NES::Emulator::BaseMapper );
+use base qw( Games::NES::Emulator::Mapper );
 
 =head1 NAME
 
@@ -30,7 +30,7 @@ it under the same terms as Perl itself.
 
 =over 4 
 
-=item * L<Games::NES::Emulator::BaseMapper>
+=item * L<Games::NES::Emulator::Mapper>
 
 =back
 

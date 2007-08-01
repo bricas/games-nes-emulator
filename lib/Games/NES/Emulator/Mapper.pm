@@ -1,4 +1,4 @@
-package Games::NES::Emulator::BaseMapper;
+package Games::NES::Emulator::Mapper;
 
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ use base qw( Class::Accessor::Fast );
 
 =head1 NAME
 
-Games::NES::Emulator::BaseMapper - Base class for mappers
+Games::NES::Emulator::Mapper - Base class for mappers
 
 =head1 SYNOPSIS
 
@@ -20,6 +20,20 @@ Games::NES::Emulator::BaseMapper - Base class for mappers
 =cut
 
 sub init {
+}
+
+=head2 read( )
+
+=cut
+
+sub read {
+}
+
+=head2 write( )
+
+=cut
+
+sub write {
 }
 
 =head1 AUTHOR
