@@ -13,7 +13,7 @@ use Games::NES::Emulator::Input; # controller
 
 our $VERSION = '0.01';
 
-__PACKAGE__->mk_accessors( qw( rom cpu apu ppu inputs ) );
+__PACKAGE__->mk_accessors( qw( rom cpu apu ppu mapper inputs ) );
 
 =head1 NAME
 
@@ -66,8 +66,8 @@ sub new {
     $self->apu( Games::NES::Emulator::APU->new )->init( $self );
 
     $self->inputs( [
-        Games::NES::Emulator::Input->new( { number => 1 } );
-        Games::NES::Emulator::Input->new( { number => 2 } );
+        Games::NES::Emulator::Input->new( { number => 1 } ),
+        Games::NES::Emulator::Input->new( { number => 2 } )
     ] );
 
     return $self;
@@ -84,6 +84,17 @@ sub load_rom {
     my $filename = shift;
 
     $self->rom( Games::NES::ROM->new( $filename ) );
+
+    my $mapperid = $self->rom->mapper;
+
+    my $class = "Games::NES::Emulator::Mappers::Mapper${mapperid}";
+    eval "use $class";
+
+    if( $@ ) {
+        die "Mapper $mapperid not supported.";
+    }
+
+    $self->mapper( $class->new )->init;
 }
 
 =head2 run( )

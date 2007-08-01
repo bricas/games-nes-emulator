@@ -1,15 +1,13 @@
-package Games::NES::Emulator::Input;
+package Games::NES::Emulator::BaseMapper;
 
 use strict;
 use warnings;
 
 use base qw( Class::Accessor::Fast );
 
-__PACKAGE__->mk_accessors( qw( number ) );
-
 =head1 NAME
 
-Games::NES::Emulator::Input - NES Controller
+Games::NES::Emulator::BaseMapper - Base class for mappers
 
 =head1 SYNOPSIS
 
@@ -17,11 +15,11 @@ Games::NES::Emulator::Input - NES Controller
 
 =head1 METHODS
 
-=head2 poll( )
+=head2 init( )
 
 =cut
 
-sub poll {
+sub init {
 }
 
 =head1 AUTHOR
