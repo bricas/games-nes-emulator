@@ -9,10 +9,7 @@ use constant SET_UNUSED => 0x20;
 use constant RESET => 0x08;
 
 __PACKAGE__->mk_accessors(
-    qw(
-        registers memory interrupt_line
-        toggle frame_counter cycle_counter
-    )
+    qw( registers memory interrupt_line toggle frame_counter cycle_counter )
 );
 
 =head1 NAME
@@ -34,6 +31,8 @@ sub new {
     my $self = $class->SUPER::new( @_ );
 
     $self->registers( CPU::Emulator::6502::Registers->new );
+    $self->interrupt_line( 0 );
+    $self->cycle_counter( 0 );
 
     return $self;
 }
@@ -44,14 +43,32 @@ sub new {
 
 sub init {
     my $self = shift;
-
     my $reg = $self->registers;
 
-	$reg->status( SET_UNUSED );
+    $self->memory( [ ] );
+    $reg->status( SET_UNUSED );
 
     for( qw( acc x y pc sp ) ) {
         $reg->$_( 0 );
     }
+}
+
+=head2 RAM_read
+
+=cut
+
+sub RAM_read {
+    my $self = shift;
+    return $self->memory->[ shift ];
+}
+
+=head2 RAM_write
+
+=cut
+
+sub RAM_write {
+    my $self = shift;
+    $self->memory->[ shift ] = shift;
 }
 
 =head1 AUTHOR
