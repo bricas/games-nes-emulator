@@ -5,6 +5,8 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
+use CPU::Emulator::6502::Registers;
+
 use constant SET_UNUSED => 0x20;
 use constant RESET => 0x08;
 
