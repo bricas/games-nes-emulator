@@ -1,13 +1,15 @@
-package Games::NES::Emulator::CPU;
+package CPU::Emulator::6502::Registers;
 
 use strict;
 use warnings;
 
-use base qw( CPU::Emulator::6502 );
+use base qw( Class::Accessor::Fast );
+
+__PACKAGE__->mk_accessors( qw( acc x y pc sp status ) );
 
 =head1 NAME
 
-Games::NES::Emulator::CPU - NES Central Processing Unit
+CPU::Emulator::6502::Registers - A set of registers for the 6502 CPU
 
 =head1 SYNOPSIS
 
@@ -15,16 +17,29 @@ Games::NES::Emulator::CPU - NES Central Processing Unit
 
 =head1 METHODS
 
-=head2 init()
+=head2 acc( )
 
-=cut
+Accumulator
 
-sub init {
-    my $self = shift;
-    $self->SUPER::init( @_ );
+=head2 x( )
 
-    $self->interrupt_line( 0 );
-}
+X
+
+=head2 y( )
+
+Y
+
+=head2 pc( )
+
+Program Counter
+
+=head2 sp( )
+
+Stack Pointer
+
+=head2 status( )
+
+Status
 
 =head1 AUTHOR
 
@@ -42,8 +57,6 @@ it under the same terms as Perl itself.
 =over 4 
 
 =item * L<CPU::Emulator::6502>
-
-=item * L<Games::NES::Emulator>
 
 =back
 

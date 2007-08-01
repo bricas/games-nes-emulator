@@ -95,6 +95,7 @@ sub load_rom {
     }
 
     $self->mapper( $class->new )->init;
+    $self->cpu->interrupt_line( $self->cpu->interrupt_line | $self->cpu->RESET );
 }
 
 =head2 run( )

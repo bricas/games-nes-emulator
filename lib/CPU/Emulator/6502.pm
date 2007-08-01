@@ -5,6 +5,9 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
+use constant SET_UNUSED => 0x20;
+use constant RESET => 0x08;
+
 __PACKAGE__->mk_accessors(
     qw(
         registers memory interrupt_line
@@ -21,6 +24,35 @@ CPU::Emulator::6502 - Class representing a 6502 CPU
 =head1 DESCRIPTION
 
 =head1 METHODS
+
+=head2 new( )
+
+=cut
+
+sub new {
+    my $class = shift;
+    my $self = $class->SUPER::new( @_ );
+
+    $self->registers( CPU::Emulator::6502::Registers->new );
+
+    return $self;
+}
+
+=head2 init( )
+
+=cut
+
+sub init {
+    my $self = shift;
+
+    my $reg = $self->registers;
+
+	$reg->status( SET_UNUSED );
+
+    for( qw( acc x y pc sp ) ) {
+        $reg->$_( 0 );
+    }
+}
 
 =head1 AUTHOR
 
