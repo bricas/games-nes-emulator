@@ -3,6 +3,8 @@ package Games::NES::Emulator::PPU;
 use strict;
 use warnings;
 
+use base qw( Class::Accessor::Fast );
+
 =head1 NAME
 
 Games::NES::Emulator::PPU - NES Picture Processing Unit
@@ -12,6 +14,13 @@ Games::NES::Emulator::PPU - NES Picture Processing Unit
 =head1 DESCRIPTION
 
 =head1 METHODS
+
+=head2 init( )
+
+=cut
+
+sub init {
+}
 
 =head1 AUTHOR
 

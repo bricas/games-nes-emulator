@@ -9,10 +9,11 @@ use Games::NES::ROM; # the game
 use Games::NES::Emulator::CPU; # NES specific 6502 CPU
 use Games::NES::Emulator::PPU; # graphics
 use Games::NES::Emulator::APU; # audio
+use Games::NES::Emulator::Input; # controller
 
 our $VERSION = '0.01';
 
-__PACKAGE__->mk_accessors( qw( rom cpu ) );
+__PACKAGE__->mk_accessors( qw( rom cpu apu ppu inputs ) );
 
 =head1 NAME
 
@@ -60,7 +61,14 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new( @_ );
 
-    $self->cpu( Games::NES::Emulator::CPU->new )->init;
+    $self->cpu( Games::NES::Emulator::CPU->new )->init( $self );
+    $self->ppu( Games::NES::Emulator::PPU->new )->init( $self );
+    $self->apu( Games::NES::Emulator::APU->new )->init( $self );
+
+    $self->inputs( [
+        Games::NES::Emulator::Input->new( { number => 1 } );
+        Games::NES::Emulator::Input->new( { number => 2 } );
+    ] );
 
     return $self;
 }
