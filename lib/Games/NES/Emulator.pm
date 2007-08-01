@@ -94,7 +94,7 @@ sub load_rom {
         die "Mapper $mapperid not supported.";
     }
 
-    $self->mapper( $class->new )->init;
+    $self->mapper( $class->new )->init( $self );
     $self->cpu->interrupt_line( $self->cpu->interrupt_line | $self->cpu->RESET );
 }
 

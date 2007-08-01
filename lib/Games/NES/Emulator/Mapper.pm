@@ -7,7 +7,7 @@ use base qw( Class::Accessor::Fast );
 
 use Scalar::Util ();
 
-__PACKAGE__->mk_accessors( 'context' );
+__PACKAGE__->mk_accessors( qw( context chr_map prg_map ) );
 
 =head1 NAME
 
@@ -26,8 +26,47 @@ Games::NES::Emulator::Mapper - Base class for mappers
 sub init {
     my $self = shift;
     my $emu = shift;
+    Scalar::Util::weaken( $emu );
 
-    $self->context( Scalar::Util::weaken( $emu ) );
+    $self->context( $emu );
+
+    $self->_init_maps;
+    $self->_init_memory;
+}
+
+sub _init_maps {
+    my $self = shift;
+    $self->prg_map( {
+        8  => undef,
+        16 => undef,
+        32 => undef,
+    } );
+    $self->chr_map( {
+        1 => undef,
+        2 => undef,
+        4 => undef,
+        8 => undef,
+    } );
+}
+
+sub _init_memory {
+    my $self = shift;
+    my $rom  = $self->context->rom;
+
+    my $prgs = $rom->PRG_count;
+	if( $prgs > 0 ) {				
+		if( $prgs == 1 ) {
+            $self->swap_prg_16k( 0x8000, 0 );
+            $self->swap_prg_16k( 0xC000, 0 );
+        }
+        else {
+            $self->swap_prg_32k( 0 );
+        }
+	}
+		
+	if( $rom->CHR_count > 0 ) {			
+        $self->swap_chr_8k( 0 );
+	}	    
 }
 
 =head2 read( $address )
@@ -48,6 +87,55 @@ The base mapper doesn't actually do any writes.
 =cut
 
 sub write {
+}
+
+=head2 swap_prg_8k
+
+=cut
+
+sub swap_prg_8k {
+}
+
+=head2 swap_prg_16k
+
+=cut
+
+sub swap_prg_16k {
+}
+
+=head2 swap_prg_32k
+
+=cut
+
+sub swap_prg_32k {
+}
+
+=head2 swap_chr_1k
+
+=cut
+
+sub swap_chr_1k {
+}
+
+=head2 swap_chr_2k
+
+=cut
+
+sub swap_chr_2k {
+}
+
+=head2 swap_chr_4k
+
+=cut
+
+sub swap_chr_4k {
+}
+
+=head2 swap_chr_8k
+
+=cut
+
+sub swap_chr_8k {
 }
 
 =head1 AUTHOR
