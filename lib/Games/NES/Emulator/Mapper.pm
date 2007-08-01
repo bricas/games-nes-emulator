@@ -5,6 +5,10 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
+use Scalar::Util ();
+
+__PACKAGE__->mk_accessors( 'context' );
+
 =head1 NAME
 
 Games::NES::Emulator::Mapper - Base class for mappers
@@ -20,16 +24,26 @@ Games::NES::Emulator::Mapper - Base class for mappers
 =cut
 
 sub init {
+    my $self = shift;
+    my $emu = shift;
+
+    $self->context( Scalar::Util::weaken( $emu ) );
 }
 
-=head2 read( )
+=head2 read( $address )
+
+Reads $address from the CPU's memory.
 
 =cut
 
 sub read {
+    my( $self, $addr ) = @_;
+    return $self->context->cpu->memory->[ $addr ];
 }
 
-=head2 write( )
+=head2 write( $address => $data )
+
+The base mapper doesn't actually do any writes.
 
 =cut
 

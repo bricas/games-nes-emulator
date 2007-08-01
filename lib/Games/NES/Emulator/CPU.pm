@@ -5,6 +5,10 @@ use warnings;
 
 use base qw( CPU::Emulator::6502 );
 
+use Scalar::Util ();
+
+__PACKAGE__->mk_accessors( 'context' );
+
 =head1 NAME
 
 Games::NES::Emulator::CPU - NES Central Processing Unit
@@ -21,9 +25,29 @@ Games::NES::Emulator::CPU - NES Central Processing Unit
 
 sub init {
     my $self = shift;
-    $self->SUPER::init( @_ );
+    my $emu = shift;
 
+    $self->SUPER::init( @_ );
+    $self->context( Scalar::Util::weaken( $emu ) );
     $self->interrupt_line( 0 );
+}
+
+=head2 RAM_read( $addr )
+
+=cut
+
+sub RAM_read {
+    my( $self, $addr ) = @_;
+    my $c = $self->context;
+    my $block = $addr >> 13;
+
+    # TODO fill 
+    if( $block == 0 ) {
+        return $self->SUPER::RAM_read( $addr & 0x7FF );
+    }
+    else {
+        return $c->mapper->read( $addr );
+    }
 }
 
 =head1 AUTHOR

@@ -55,7 +55,9 @@ sub init {
     }
 }
 
-=head2 RAM_read
+=head2 RAM_read( $address )
+
+Reads data from C<$address> in memory.
 
 =cut
 
@@ -64,13 +66,36 @@ sub RAM_read {
     return $self->memory->[ shift ];
 }
 
-=head2 RAM_write
+=head2 RAM_write( $address => $data )
+
+Writes C<$data> to C<$address> in memory.
 
 =cut
 
 sub RAM_write {
     my $self = shift;
     $self->memory->[ shift ] = shift;
+}
+
+=head2 handle_interrupt( )
+
+=cut
+
+sub handle_interrupt {
+    my $self = shift;
+}
+
+=head2 execute_instruction( )
+
+=cut
+
+sub execute_instruction {
+    my $self = shift;
+    my $reg  = $self->registers;
+
+    # for now just grab the opcode and move on
+    my $op = $self->RAM_read( $reg->pc );
+    $reg->pc( $reg->pc + 1 );
 }
 
 =head1 AUTHOR
