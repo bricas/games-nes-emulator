@@ -1,4 +1,4 @@
-use Test::More tests => 9;
+use Test::More tests => 8;
 
 BEGIN { 
     use_ok( 'Games::NES::Emulator' );
@@ -9,5 +9,4 @@ BEGIN {
     use_ok( 'Games::NES::Emulator::Mapper' );
     use_ok( 'Games::NES::Emulator::Mappers::Mapper0' );
     use_ok( 'CPU::Emulator::6502' );
-    use_ok( 'CPU::Emulator::6502::Registers' );
 }

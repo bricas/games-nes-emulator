@@ -30,6 +30,7 @@ sub init {
     $self->SUPER::init( @_ );
     $self->context( Scalar::Util::weaken( $emu ) );
     $self->interrupt_line( 0 );
+    $self->memory( [ ( undef ) x 0xFFFF ] );
 }
 
 =head2 RAM_read( $addr )
@@ -44,6 +45,9 @@ sub RAM_read {
     # TODO fill 
     if( $block == 0 ) {
         return $self->SUPER::RAM_read( $addr & 0x7FF );
+    }
+    elsif( $block == 3 ) {
+        return $self->SUPER::RAM_read( $addr );
     }
     else {
         return $c->mapper->read( $addr );

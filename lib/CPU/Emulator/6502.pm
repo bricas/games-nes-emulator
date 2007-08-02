@@ -5,14 +5,14 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
-use CPU::Emulator::6502::Registers;
-
 use constant SET_UNUSED => 0x20;
 use constant RESET => 0x08;
 
 __PACKAGE__->mk_accessors(
     qw( registers memory interrupt_line toggle frame_counter cycle_counter )
 );
+
+my @registers = qw( acc x y pc sp status );
 
 =head1 NAME
 
@@ -21,6 +21,24 @@ CPU::Emulator::6502 - Class representing a 6502 CPU
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+=head2 REGISTERS
+
+=over 4
+
+=item * acc - Accumulator
+
+=item * x
+
+=item * y
+
+=item * pc - Program Counter
+
+=item * sp - Stack Pointer
+
+=item * status
+
+=back
 
 =head1 METHODS
 
@@ -32,7 +50,9 @@ sub new {
     my $class = shift;
     my $self = $class->SUPER::new( @_ );
 
-    $self->registers( CPU::Emulator::6502::Registers->new );
+    $self->registers( {
+        map { $_ => undef } @registers
+    } );
     $self->interrupt_line( 0 );
     $self->cycle_counter( 0 );
 
@@ -48,10 +68,10 @@ sub init {
     my $reg = $self->registers;
 
     $self->memory( [ ] );
-    $reg->status( SET_UNUSED );
+    $reg->{ status } = SET_UNUSED;
 
-    for( qw( acc x y pc sp ) ) {
-        $reg->$_( 0 );
+    for( @registers ) {
+        $reg->{ $_ } =  0;
     }
 }
 
@@ -94,8 +114,8 @@ sub execute_instruction {
     my $reg  = $self->registers;
 
     # for now just grab the opcode and move on
-    my $op = $self->RAM_read( $reg->pc );
-    $reg->pc( $reg->pc + 1 );
+    my $op = $self->RAM_read( $reg->{ pc } );
+    $reg->{ pc } += 1;
 }
 
 =head1 AUTHOR

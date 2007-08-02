@@ -13,7 +13,7 @@ use Games::NES::Emulator::Input; # controller
 
 our $VERSION = '0.01';
 
-__PACKAGE__->mk_accessors( qw( rom cpu apu ppu mapper inputs ) );
+__PACKAGE__->mk_accessors( qw( rom cpu apu ppu mapper inputs running ) );
 
 =head1 NAME
 
@@ -107,7 +107,12 @@ Begins execution of the code found in the ROM.
 sub run {
     my $self = shift;
     die 'No ROM loaded.' unless $self->rom;
-    die 'Not implemented!'
+
+    $self->running( 1 );
+
+    while( $self->running ) {
+        die "Not implemented!";
+    }
 }
 
 =head1 AUTHOR
