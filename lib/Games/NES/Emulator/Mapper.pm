@@ -37,15 +37,15 @@ sub init {
 sub _init_maps {
     my $self = shift;
     $self->prg_map( {
-        8  => [],
-        16 => [],
-        32 => [],
+        8  => [ (-1) x 4 ],
+        16 => [ (-1) x 2 ],
+        32 => [ -1 ],
     } );
     $self->chr_map( {
-        1 => [],
-        2 => [],
-        4 => [],
-        8 => [],
+        1 => [ (-1) x 8 ],
+        2 => [ (-1) x 4 ],
+        4 => [ (-1) x 2 ],
+        8 => [ -1 ],
     } );
 }
 
@@ -100,7 +100,7 @@ sub swap_prg_8k {
     my $slot = ($offset & 0x4000) >> 14;
     my $map_8k = $self->prg_map->{ 8 };
 
-    if( !$map_8k->[ $slot ] || $map_8k->[ $slot ] != $bank ) {
+    if( $map_8k->[ $slot ] != $bank ) {
         my $c = $self->context;
         my $bank_offset = 0;
         my $prg_bank = $bank >> 1;
@@ -160,32 +160,64 @@ sub swap_prg_32k {
     $map_8k = [ map { $b + $_ } (0..3) ];
 }
 
-=head2 swap_chr_1k
+=head2 swap_chr_1k( $offset, $bank )
+
+Swap a 1k bank of CHRROM into the PPU's memory
 
 =cut
 
 sub swap_chr_1k {
+    my( $self, $offset, $bank ) = @_;
 }
 
-=head2 swap_chr_2k
+=head2 swap_chr_2k( $offset, $bank )
+
+Swap a 2k bank of CHRROM into the PPU's memory
 
 =cut
 
 sub swap_chr_2k {
+    my( $self, $offset, $bank ) = @_;
 }
 
-=head2 swap_chr_4k
+=head2 swap_chr_4k( $offset, $bank )
+
+Swap a 4k bank of CHRROM into the PPU's memory
 
 =cut
 
 sub swap_chr_4k {
+    my( $self, $offset, $bank ) = @_;
+    my $map_4k = $self->chr_map->{ 4 };
+    my $slot = ( $offset & 0x1000 ) >> 12;
+
+    if( $map_4k->[ $slot ] != $bank ) {
+        my $bank_offset = 0;
+        $bank_offset = 0x1000 if $bank & 1;
+        $bank >>= 1;
+
+        my $c = $self->context;
+        splice( @{ $c->ppu->VRAM }, $offset, 0x1000, substr( $c->rom->CHR_banks->[ $bank ], $bank_offset, 0x1000 ) );
+
+        $map_4k->[ $slot ] = $bank;
+    }
 }
 
-=head2 swap_chr_8k
+=head2 swap_chr_8k( $bank )
+
+Swap an 8k bank of CHRROM into the PPU's memory
 
 =cut
 
 sub swap_chr_8k {
+    my( $self, $bank ) = @_;
+    my $map_8k = $self->chr_map->{ 8 };
+    
+    if( $map_8k->[ 0 ] != $bank  ) {
+        my $c = $self->context;
+		splice( @{ $c->ppu->VRAM->memory }, 0, 0x2000, unpack( 'C*', $c->rom->CHR_banks->[ $bank ] ) );
+        $map_8k->[ 0 ] = $bank;
+    }
 }
 
 =head1 AUTHOR
