@@ -5,7 +5,7 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
-__PACKAGE__->mk_accessors( qw( memory palette ) );
+__PACKAGE__->mk_accessors( qw( memory palette name_table ) );
 
 =head1 NAME
 
@@ -25,6 +25,9 @@ sub init {
     my( $self ) = @_;
     $self->memory( [ (0) x ( 0x2000 + 1 ) ] );
     $self->palette( [ (0) x ( 0x20 + 1 ) ] );
+    $self->name_table( [
+        map { [ (0) x (0x400 + 1) ] } ( 0..3 )
+    ] );
 }
 
 =head1 AUTHOR

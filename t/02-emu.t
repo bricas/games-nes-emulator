@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 use_ok( 'Games::NES::Emulator' );
 
@@ -7,6 +7,11 @@ isa_ok( $emu, 'Games::NES::Emulator' );
 isa_ok( $emu->cpu, 'Games::NES::Emulator::CPU' );
 isa_ok( $emu->apu, 'Games::NES::Emulator::APU' );
 isa_ok( $emu->ppu, 'Games::NES::Emulator::PPU' );
+isa_ok( $emu->ppu->VRAM, 'Games::NES::Emulator::PPU::Memory' );
+
+for( @{ $emu->inputs } ) {
+    isa_ok( $_, 'Games::NES::Emulator::Input' );
+}
 
 SKIP: {
     my $rom = $ENV{ TEST_ROM };

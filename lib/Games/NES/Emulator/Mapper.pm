@@ -185,7 +185,7 @@ sub swap_chr_1k {
     }
     else { # name table swap
         my $nt = ( $offset & 0xc00 ) >> 10;
-#        splice( @{ $c->ppu->VRAM->name_table->[ $nt ] }, 0, 0x400, unpack( 'C*', substr( $c->rom->CHR_banks->[ $r_bank ], $bank_offset, 0x400 ) ) );
+        splice( @{ $c->ppu->VRAM->name_table->[ $nt ] }, 0, 0x400, unpack( 'C*', substr( $c->rom->CHR_banks->[ $r_bank ], $bank_offset, 0x400 ) ) );
     }
 }
 
