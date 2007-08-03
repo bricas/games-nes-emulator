@@ -26,11 +26,21 @@ Games::NES::Emulator::CPU - NES Central Processing Unit
 sub init {
     my $self = shift;
     my $emu = shift;
+    Scalar::Util::weaken( $emu );
 
     $self->SUPER::init( @_ );
-    $self->context( Scalar::Util::weaken( $emu ) );
+    $self->context( $emu );
     $self->interrupt_line( 0 );
-    $self->memory( [ ( undef ) x 0xFFFF ] );
+
+    $self->memory( [ ( 0 ) x ( 0xFFFF + 1 ) ] );
+
+    my $reg = $self->registers;
+    $reg->{ pc } = 0x8000;
+    $reg->{ sp } = 0xFF;
+
+	$self->toggle( 1 );
+	$self->cycle_counter( 0 );
+	$self->frame_counter( 0 );
 }
 
 =head2 RAM_read( $addr )

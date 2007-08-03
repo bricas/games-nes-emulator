@@ -5,11 +5,14 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
+use Text::SimpleTable;
+
 use constant SET_UNUSED => 0x20;
 use constant RESET => 0x08;
 
 __PACKAGE__->mk_accessors(
-    qw( registers memory interrupt_line toggle frame_counter cycle_counter )
+    qw( registers memory interrupt_line toggle
+    frame_counter cycle_counter current_op )
 );
 
 my @registers = qw( acc x y pc sp status );
@@ -67,7 +70,7 @@ sub init {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->memory( [ ] );
+    $self->memory( [ ( undef ) x 0xFF ] );
     $reg->{ status } = SET_UNUSED;
 
     for( @registers ) {
@@ -111,11 +114,57 @@ sub handle_interrupt {
 
 sub execute_instruction {
     my $self = shift;
-    my $reg  = $self->registers;
+    my $op = $self->get_instruction;
+}
 
-    # for now just grab the opcode and move on
+sub get_instruction {
+    my $self = shift;
+    my $reg  = $self->registers;
     my $op = $self->RAM_read( $reg->{ pc } );
+
+    return $self->current_op( $op );
+}
+
+sub next_instruction {
+    my $self = shift;
+    my $reg  = $self->registers;
     $reg->{ pc } += 1;
+}
+
+sub debug { 
+    my $self = shift;
+    my $reg = $self->registers;
+
+    my $t = Text::SimpleTable->new(
+        [ 4, 'PC' ], [ 4, 'SP' ], [ 2, 'A' ], [ 2, 'X' ], [ 2, 'Y' ], [ 8, 'Status' ], [ 4, 'OP' ],
+    );
+
+    my $status = $reg->{ status };
+    my $a_status = '';
+    $a_status .= vec( $status, 7, 1 ) ? 'S' : '.';
+    $a_status .= vec( $status, 6, 1 ) ? 'V' : '.';
+    $a_status .= vec( $status, 5, 1 ) ? '-' : '.';
+    $a_status .= vec( $status, 4, 1 ) ? 'B' : '.';
+    $a_status .= vec( $status, 3, 1 ) ? 'D' : '.';
+    $a_status .= vec( $status, 2, 1 ) ? 'I' : '.';
+    $a_status .= vec( $status, 1, 1 ) ? 'Z' : '.';
+    $a_status .= vec( $status, 0, 1 ) ? 'C' : '.';
+
+    $t->row(
+        ( map { sprintf( '%x', $reg->{ $_ } ) } qw( pc sp acc x y ) ),
+        $a_status,
+        sprintf( '%x', $self->current_op || 0 ),
+    );
+
+    my $t_stack = Text::SimpleTable->new(
+        [ 5,  'Stack' ]
+    );
+
+    for( 0..9 ) {
+        $t_stack->row( sprintf( '%x', $self->RAM_read( 0x1FF - $_ ) ) );
+    }
+
+    return $t->draw . $t_stack->draw;
 }
 
 =head1 AUTHOR

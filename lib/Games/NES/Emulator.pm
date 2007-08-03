@@ -110,8 +110,10 @@ sub run {
 
     $self->running( 1 );
 
-    while( $self->running ) {
-        die "Not implemented!";
+    while( $self->running && defined $self->cpu->get_instruction ) {
+        print $self->cpu->debug;
+        $self->cpu->execute_instruction;
+        $self->cpu->next_instruction;
     }
 }
 
