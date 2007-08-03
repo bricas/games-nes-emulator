@@ -38,9 +38,9 @@ sub init {
     $reg->{ pc } = 0x8000;
     $reg->{ sp } = 0xFF;
 
-	$self->toggle( 1 );
-	$self->cycle_counter( 0 );
-	$self->frame_counter( 0 );
+    $self->toggle( 1 );
+    $self->cycle_counter( 0 );
+    $self->frame_counter( 0 );
 }
 
 =head2 RAM_read( $addr )

@@ -54,19 +54,19 @@ sub _init_memory {
     my $rom  = $self->context->rom;
 
     my $prgs = $rom->PRG_count;
-	if( $prgs > 0 ) {				
-		if( $prgs == 1 ) {
+    if( $prgs > 0 ) {
+        if( $prgs == 1 ) {
             $self->swap_prg_16k( 0x8000, 0 );
             $self->swap_prg_16k( 0xC000, 0 );
         }
         else {
             $self->swap_prg_32k( 0 );
         }
-	}
-		
-	if( $rom->CHR_count > 0 ) {			
+    }
+
+    if( $rom->CHR_count > 0 ) {
         $self->swap_chr_8k( 0 );
-	}	    
+    }
 }
 
 =head2 read( $address )

@@ -160,11 +160,27 @@ sub debug {
         [ 5,  'Stack' ]
     );
 
+    my $t_code = Text::SimpleTable->new(
+        [ 4, 'Addr' ], [ 27,  'Code' ]
+    );
+
     for( 0..9 ) {
-        $t_stack->row( sprintf( '%x', $self->RAM_read( 0x1FF - $_ ) ) );
+        $t_stack->row( sprintf( '%x', $self->memory->[ 0x1FF - $_ ] ) );
+        my $line = $reg->{ pc } + $_;
+        $t_code->row( sprintf( '%x', $line ), sprintf( '%x', $self->memory->[ $line ] ) );
     }
 
-    return $t->draw . $t_stack->draw;
+    my @s_rows = split( "\n", $t_stack->draw );
+    my @c_rows = split( "\n", $t_code->draw );
+    my $output = '';
+
+    while( @s_rows ) {
+        $output .= join( ' ', shift( @s_rows ), shift( @c_rows ) );
+        $output .= "\n";
+    }
+    
+
+    return $t->draw . $output;
 }
 
 =head1 AUTHOR
