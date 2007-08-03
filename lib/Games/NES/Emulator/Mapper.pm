@@ -168,6 +168,25 @@ Swap a 1k bank of CHRROM into the PPU's memory
 
 sub swap_chr_1k {
     my( $self, $offset, $bank ) = @_;
+
+    my $r_bank = $bank >> 3;
+    my $bank_offset = ( $bank & 0x07 ) * 0x400;
+    my $c = $self->context;
+
+    if( $offset < 0x2000 ) {
+        my $map_1k = $self->chr_map->{ 1 };
+        my $slot = ( $offset & 0x1C00 ) >> 10;
+        if( $map_1k->[ $slot ] != $bank ) {            
+            splice( @{ $c->ppu->VRAM->memory }, $offset, 0x400, unpack( 'C*', substr( $c->rom->CHR_banks->[ $r_bank ], $bank_offset, 0x400 ) ) );
+
+            $map_1k->[ $slot ] = $bank;
+        }
+        
+    }
+    else { # name table swap
+        my $nt = ( $offset & 0xc00 ) >> 10;
+#        splice( @{ $c->ppu->VRAM->name_table->[ $nt ] }, 0, 0x400, unpack( 'C*', substr( $c->rom->CHR_banks->[ $r_bank ], $bank_offset, 0x400 ) ) );
+    }
 }
 
 =head2 swap_chr_2k( $offset, $bank )
@@ -178,6 +197,17 @@ Swap a 2k bank of CHRROM into the PPU's memory
 
 sub swap_chr_2k {
     my( $self, $offset, $bank ) = @_;
+    my $map_2k = $self->chr_map->{ 2 };
+    my $slot = ( $offset & 0x1800 ) >> 11;
+    if( $map_2k->[ $slot ] != $bank ) {
+        my $bank_offset = ( $bank & 3 ) << 11;
+        $bank >>= 2;
+
+        my $c = $self->context;
+        splice( @{ $c->ppu->VRAM->memory }, $offset, 0x800, unpack( 'C*', substr( $c->rom->CHR_banks->[ $bank ], $bank_offset, 0x800 ) ) );
+
+        $map_2k->[ $slot ] = $bank;
+    }
 }
 
 =head2 swap_chr_4k( $offset, $bank )
@@ -197,7 +227,7 @@ sub swap_chr_4k {
         $bank >>= 1;
 
         my $c = $self->context;
-        splice( @{ $c->ppu->VRAM }, $offset, 0x1000, substr( $c->rom->CHR_banks->[ $bank ], $bank_offset, 0x1000 ) );
+        splice( @{ $c->ppu->VRAM }, $offset, 0x1000, unpack( 'C*', substr( $c->rom->CHR_banks->[ $bank ], $bank_offset, 0x1000 ) ) );
 
         $map_4k->[ $slot ] = $bank;
     }
