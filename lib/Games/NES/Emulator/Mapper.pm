@@ -91,6 +91,8 @@ sub write {
 
 =head2 swap_prg_8k( $offset, $bank )
 
+Swap an 8K bank of PRGROM into the CPU's memory.
+
 =cut
 
 sub swap_prg_8k {
@@ -99,17 +101,12 @@ sub swap_prg_8k {
     my $map_8k = $self->prg_map->{ 8 };
 
     if( !$map_8k->[ $slot ] || $map_8k->[ $slot ] != $bank ) {
+        my $c = $self->context;
         my $bank_offset = 0;
-=pod
+        my $prg_bank = $bank >> 1;
 
-		int intBankOffset = 0x0000, intPRGBank16 = bytBank >> 1;
-		
-		// If the bank is the upper portion of a 16K page then split it
-		if (bytBank & 0x01) intBankOffset = 0x2000;
-		
-		memcpy( (void *)&mCpu->memory[intOffset], (void *)&mCartridge->PRGROM_Pages[intPRGBank16][intBankOffset], 0x2000);
-
-=cut
+        $bank_offset = 0x2000 if $bank == 1;
+        splice( @{ $c->cpu->memory }, $bank_offset, 0x2000, unpack( 'C*', substr( $c->rom->PRG_banks->[ $prg_bank ], $bank_offset, 0x2000 ) ) );
 
         $map_8k->[ $slot ] = $bank;
     }
@@ -118,15 +115,30 @@ sub swap_prg_8k {
 
 =head2 swap_prg_16k( $offset, $bank )
 
+Swap a 16K bank of PRGROM into the CPU's memory.
+
 =cut
 
 sub swap_prg_16k {
     my( $self, $offset, $bank ) = @_;
     my $slot = ($offset & 0x4000) >> 14;
-    die $slot;
+    my $map_16k = $self->prg_map->{ 16 };
+    my $map_8k = $self->prg_map->{ 8 };
+
+    if( $map_16k->[ $slot ] != $bank ) {
+        my $c = $self->context;
+        splice( @{ $c->cpu->memory }, $offset, 0x4000, unpack( 'C*', $c->rom->PRG_banks->[ $bank ] ) );
+        $map_16k->[ $slot ] = $bank;
+    }
+
+    my $eb = $offset == 0x8000 ? 0 : 2;
+    $map_8k->[ $eb ] = $bank << 1;
+    $map_8k->[ $eb + 1 ] = ( $bank << 1 ) + 1;
 }
 
 =head2 swap_prg_32k( $bank )
+
+Swap a 32K bank of PRGROM into the CPU's memory.
 
 =cut
 
