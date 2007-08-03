@@ -117,6 +117,10 @@ sub execute_instruction {
     my $op = $self->get_instruction;
 }
 
+=head2 get_instruction( )
+
+=cut
+
 sub get_instruction {
     my $self = shift;
     my $reg  = $self->registers;
@@ -125,11 +129,19 @@ sub get_instruction {
     return $self->current_op( $op );
 }
 
+=head2 next_instruction( )
+
+=cut
+
 sub next_instruction {
     my $self = shift;
     my $reg  = $self->registers;
     $reg->{ pc } += 1;
 }
+
+=head2 debug( )
+
+=cut
 
 sub debug { 
     my $self = shift;

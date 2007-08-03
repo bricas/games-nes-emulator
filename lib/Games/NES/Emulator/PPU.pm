@@ -5,6 +5,10 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
+__PACKAGE__->mk_accessors( qw( registers SPRRAM ) );
+
+my @registers = qw( control1 control2 status SPRRAM_addr VRAM_IO VRAM_addr VRAM_temp_addr );
+
 =head1 NAME
 
 Games::NES::Emulator::PPU - NES Picture Processing Unit
@@ -20,6 +24,10 @@ Games::NES::Emulator::PPU - NES Picture Processing Unit
 =cut
 
 sub init {
+    my $self = shift;
+    $self->SPRRAM( [ ( 0 ) x ( 0xFF + 1 ) ] );
+
+    $self->registers( { map { $_ => 0 } @registers } );
 }
 
 =head1 AUTHOR
