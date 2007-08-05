@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::TAY;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0xA8,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::TAY - Transfer the accumulator to the Y register
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

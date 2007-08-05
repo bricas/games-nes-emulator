@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::INX;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0xE8,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::INX - Increment the X registers
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

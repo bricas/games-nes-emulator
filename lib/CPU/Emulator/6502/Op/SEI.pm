@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::SEI;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x78,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::SEC - Set the interrupt disable bit
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

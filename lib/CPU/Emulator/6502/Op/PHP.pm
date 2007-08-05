@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::PHP;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x08,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::PHP - Push processor status on the stack
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

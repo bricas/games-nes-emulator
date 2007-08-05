@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::BCS;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     relative => 0xB0,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::BCS - Branch on carry set
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 relative( )
+
+=cut
 
 sub relative {
     my $self = shift;

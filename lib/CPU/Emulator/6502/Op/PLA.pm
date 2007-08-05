@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::PLA;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x68,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::PLA - Pull accumulator from the stack
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

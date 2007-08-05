@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::SEC;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x38,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::SEC - Set the carry flag
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

@@ -26,6 +26,10 @@ sub immediate {
     $reg->{ pc } += 2;
 }
 
+=head2 zero_page( )
+
+=cut
+
 sub zero_page {
     my $self = shift;
     my $reg  = $self->registers;
@@ -35,6 +39,10 @@ sub zero_page {
     $self->cycle_counter( $self->cycle_counter + 1 );
 }
 
+=head2 zero_page_x( )
+
+=cut
+
 sub zero_page_x {
     my $self = shift;
     my $reg  = $self->registers;
@@ -43,6 +51,10 @@ sub zero_page_x {
     $reg->{ pc } += 2;
     $self->cycle_counter( $self->cycle_counter + 2 );
 }
+
+=head2 zero_page_y( )
+
+=cut
 
 sub zero_page_y {
     my $self = shift;
@@ -55,6 +67,12 @@ sub zero_page_y {
 
 *indirect = \&absolute;
 
+=head2 indirect( )
+
+=head2 absolute( )
+
+=cut
+
 sub absolute {
     my $self = shift;
     my $reg  = $self->registers;
@@ -65,6 +83,10 @@ sub absolute {
     $reg->{ pc } += 3;
     $self->cycle_counter( $self->cycle_counter + 2 );
 }
+
+=head2 absolute_x( )
+
+=cut
 
 sub absolute_x {
     my $self = shift;
@@ -84,6 +106,10 @@ sub absolute_x {
     }
 }
 
+=head2 absolute_y( )
+
+=cut
+
 sub absolute_y {
     my $self = shift;
     my $mem  = $self->memory;
@@ -99,6 +125,10 @@ sub absolute_y {
     }
 }
 
+=head2 indirect_x( )
+
+=cut
+
 sub indirect_x {
     my $self = shift;
     my $mem  = $self->memory;
@@ -109,6 +139,10 @@ sub indirect_x {
     $reg->{ pc } += 2;
     $self->cycle_counter( $self->cycle_counter + 4 );
 }
+
+=head2 indirect_y( )
+
+=cut
 
 sub indirect_y {
     my $self = shift;

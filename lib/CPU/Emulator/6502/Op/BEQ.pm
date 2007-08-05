@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::BEQ;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     relative => 0xF0,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::BEQ - Branch on result zero
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 relative( )
+
+=cut
 
 sub relative {
     my $self = shift;

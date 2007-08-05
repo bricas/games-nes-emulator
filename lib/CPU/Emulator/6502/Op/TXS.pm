@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::TXS;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x9A,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::TXS - Transfer the X register to the stack pointer
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

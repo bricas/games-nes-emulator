@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::SED;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0xF8,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::SEC - Set decimal mode
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

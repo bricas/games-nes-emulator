@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::JSR;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     absolute => 0x20
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::JSR - Jump and save the return address
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 absolute( )
+
+=cut
 
 sub absolute {
     my $self = shift;

@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::RTS;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x60,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::RTS - Return from subroutine
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

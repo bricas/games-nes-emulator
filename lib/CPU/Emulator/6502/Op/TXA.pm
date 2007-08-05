@@ -1,10 +1,25 @@
 package CPU::Emulator::6502::Op::TXA;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     implied => 0x8A,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::TXA - Transfer the X register to the accumulator
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 implied( )
+
+=cut
 
 sub implied {
     my $self = shift;

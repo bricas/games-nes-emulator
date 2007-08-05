@@ -1,15 +1,35 @@
 package CPU::Emulator::6502::Op::BIT;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     zero_page => 0x24,
     absolute  => 0x2C,
 };
 
-*zero_page = \&absolute;
+=head1 NAME
 
-sub absolute {
+CPU::Emulator::6502::Op::BIT - Bit test
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 zero_page( )
+
+=head2 absolute( )
+
+=head2 do_op( )
+
+=cut
+
+*zero_page = \&do_op;
+*absolute = \&do_op;
+
+sub do_op {
     my $self = shift;
     my $reg = $self->registers;
 
