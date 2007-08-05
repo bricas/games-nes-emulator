@@ -112,6 +112,7 @@ sub run {
 
     while( $self->running && defined $self->cpu->get_instruction ) {
         print $self->cpu->debug;
+        <STDIN>;
         $self->cpu->execute_instruction;
     }
 }
