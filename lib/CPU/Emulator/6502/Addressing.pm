@@ -62,7 +62,7 @@ sub absolute {
 
 	$self->temp2( $mem->[ $reg->{ pc } + 1 ] + ( $mem->[ $reg->{ pc } + 2 ] << 8 ) );
 
-	$reg->{ pc } += 3;;
+	$reg->{ pc } += 3;
 	$self->cycle_counter( $self->cycle_counter + 2 );
 }
 

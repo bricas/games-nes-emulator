@@ -26,7 +26,7 @@ sub indirect_y {
 
 sub indirect_x {
     my( $self ) = @_;
-#    $self->RAM_write( $self->temp2, $self->registers->{ acc } );
+    $self->RAM_write( $self->temp2, $self->registers->{ acc } );
 }
 
 1;

@@ -14,7 +14,7 @@ use constant ADDRESSING => {
 
 sub do_op {
     my $self = shift;
-#    $self->RAM_write( $self->temp2, $self->registers->{ x } );
+    $self->RAM_write( $self->temp2, $self->registers->{ x } );
 }
 
 1;
