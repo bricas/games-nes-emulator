@@ -3,11 +3,11 @@ package CPU::Emulator::6502::Op::LDY;
 use strict;
 
 use constant ADDRESSING => {
-	immediate   => 0xA0,
-	zero_page   => 0xA4,
-	zero_page_x => 0xB4,
-	absolute    => 0xAC,
-	absolute_x  => 0xBC
+    immediate   => 0xA0,
+    zero_page   => 0xA4,
+    zero_page_x => 0xB4,
+    absolute    => 0xAC,
+    absolute_x  => 0xBC
 };
 
 *immediate = \&do_op;
@@ -38,5 +38,26 @@ sub do_op {
     $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ y } == 0;
     $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ y } & 0x80;
 }
+
+=head1 AUTHOR
+
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2007 by Brian Cassidy
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=head1 SEE ALSO
+
+=over 4 
+
+=item * L<CPU::Emulator::6502>
+
+=back
+
+=cut
 
 1;

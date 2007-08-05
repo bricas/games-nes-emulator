@@ -245,7 +245,7 @@ sub swap_chr_8k {
     
     if( $map_8k->[ 0 ] != $bank  ) {
         my $c = $self->context;
-		splice( @{ $c->ppu->VRAM->memory }, 0, 0x2000, unpack( 'C*', $c->rom->CHR_banks->[ $bank ] ) );
+        splice( @{ $c->ppu->VRAM->memory }, 0, 0x2000, unpack( 'C*', $c->rom->CHR_banks->[ $bank ] ) );
         $map_8k->[ 0 ] = $bank;
     }
 }

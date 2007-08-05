@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use constant ADDRESSING => {
-	implied => 0xBA,
+    implied => 0xBA,
 };
 
 =head1 NAME

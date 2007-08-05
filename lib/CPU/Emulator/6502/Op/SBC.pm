@@ -3,14 +3,14 @@ package CPU::Emulator::6502::Op::SBC;
 use strict;
 
 use constant ADDRESSING => {
-	immediate   => 0xE9,
-	zero_page   => 0xE5,
-	zero_page_x => 0xF5,
-	absolute    => 0xED,
-	absolute_x  => 0xFD,
-	absolute_y  => 0xF9,
-	indirect_x  => 0xE1,
-	indirect_y  => 0xF1
+    immediate   => 0xE9,
+    zero_page   => 0xE5,
+    zero_page_x => 0xF5,
+    absolute    => 0xED,
+    absolute_x  => 0xFD,
+    absolute_y  => 0xF9,
+    indirect_x  => 0xE1,
+    indirect_y  => 0xF1
 };
 
 *immediate = \&do_op;
@@ -31,7 +31,7 @@ sub do_op {
 
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZOCS;
     $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if !($self->temp & 0xff);
-								
+                                
     if( (( $reg->{ acc } ^ $self->memory->[ $self->temp2 ] ) & 0x80) and (($reg->{acc} ^ $self->temp ) & 0x80) ) {
         $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW;
     }
@@ -39,7 +39,28 @@ sub do_op {
     $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp < 0x100;
     $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
 
-    $reg->{ acc } = $self->temp & 0xff;	
+    $reg->{ acc } = $self->temp & 0xff; 
 }
+
+=head1 AUTHOR
+
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2007 by Brian Cassidy
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=head1 SEE ALSO
+
+=over 4 
+
+=item * L<CPU::Emulator::6502>
+
+=back
+
+=cut
 
 1;

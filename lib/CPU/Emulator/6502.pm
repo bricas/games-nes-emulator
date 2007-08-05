@@ -10,7 +10,7 @@ use CPU::Emulator::6502::Addressing;
 use Module::Pluggable::Object;
 
 # status constants
-use constant SET_CARRY	   => 0x01;
+use constant SET_CARRY     => 0x01;
 use constant SET_ZERO      => 0x02;
 use constant SET_INTERRUPT => 0x04;
 use constant SET_DECIMAL   => 0x08;
@@ -166,28 +166,28 @@ sub RAM_write {
 =cut
 
 sub interrupt_request {
-	my $self = shift;
-	my $mem  = $self->memory;
-	my $reg  = $self->registers;
-	my $sp   = $reg->{ sp };
-	my $pc   = $reg->{ pc };
-	my $int  = $self->interrupt_line;
+    my $self = shift;
+    my $mem  = $self->memory;
+    my $reg  = $self->registers;
+    my $sp   = $reg->{ sp };
+    my $pc   = $reg->{ pc };
+    my $int  = $self->interrupt_line;
 
-	$mem->[ $sp + 0x100 ]     = ( ( $pc + 2 ) & 0xFF00 ) >> 8;
-	$mem->[ $sp - 1 + 0x100 ] = ( $pc + 2 ) & 0xFF;
-	$mem->[ $sp - 2 + 0x100 ] = $reg->{ status };
+    $mem->[ $sp + 0x100 ]     = ( ( $pc + 2 ) & 0xFF00 ) >> 8;
+    $mem->[ $sp - 1 + 0x100 ] = ( $pc + 2 ) & 0xFF;
+    $mem->[ $sp - 2 + 0x100 ] = $reg->{ status };
 
-	$reg->{ sp } -= 3;
+    $reg->{ sp } -= 3;
 
-	if( $int == IRQ ) {
-		$reg->{ pc } = $mem->[ 0xFFFE ] + ( $mem->[ 0xFFFF ] << 8 );
-	}
-	elsif( $int == NMI ) {
-		$reg->{ pc } = $mem->[ 0xFFFA ] + ( $mem->[ 0xFFFB ] << 8 );
-	}
+    if( $int == IRQ ) {
+        $reg->{ pc } = $mem->[ 0xFFFE ] + ( $mem->[ 0xFFFF ] << 8 );
+    }
+    elsif( $int == NMI ) {
+        $reg->{ pc } = $mem->[ 0xFFFA ] + ( $mem->[ 0xFFFB ] << 8 );
+    }
 
-	$self->interrupt_line( 0 );
-	$self->cycle_counter( $self->cycle_counter + 7 );
+    $self->interrupt_line( 0 );
+    $self->cycle_counter( $self->cycle_counter + 7 );
 }
 
 =head2 execute_instruction( )
@@ -198,40 +198,40 @@ sub execute_instruction {
     my $self = shift;
     my $reg = $self->registers;
 
-	if ( $self->interrupt_line ) {
-		if( $reg->{ status } & SET_INTERRUPT ) {
-			if( $self->interrupt_line & NMI ) {
-				$self->interrupt_line( NMI );
-				$self->interrupt_request;
-			}
-		}
-		else {
-			$self->interrupt_request;
-		}
-	}
+    if ( $self->interrupt_line ) {
+        if( $reg->{ status } & SET_INTERRUPT ) {
+            if( $self->interrupt_line & NMI ) {
+                $self->interrupt_line( NMI );
+                $self->interrupt_request;
+            }
+        }
+        else {
+            $self->interrupt_request;
+        }
+    }
 
     my $op = $self->get_instruction;
-	my $table = $self->instruction_table;
-	my $mode;
+    my $table = $self->instruction_table;
+    my $mode;
 
     $mode = $table->{ $op }->{ mode } if $table->{ $op };
 
-	$self->cycle_counter( $self->cycle_counter + 2 );
-	$self->temp( undef );
+    $self->cycle_counter( $self->cycle_counter + 2 );
+    $self->temp( undef );
 
     if( $mode and my $sub = CPU::Emulator::6502::Addressing->can( $mode ) ) {
-    	$sub->( $self, $op );
+        $sub->( $self, $op );
     }
 
-	if( !$table->{ $op } ) {
-		$reg->{ pc }++;
-	}
-	else {
-		eval {
-			no strict 'refs';
-			$table->{ $op }->{ sub }->( $self );
-		}
-	}
+    if( !$table->{ $op } ) {
+        $reg->{ pc }++;
+    }
+    else {
+        eval {
+            no strict 'refs';
+            $table->{ $op }->{ sub }->( $self );
+        }
+    }
 
 }
 

@@ -3,11 +3,11 @@ package CPU::Emulator::6502::Op::LSR;
 use strict;
 
 use constant ADDRESSING => {
-	accumulator => 0x4A,
-	zero_page   => 0x46,
-	zero_page_x => 0x56,
-	absolute    => 0x4E,
-	absolute_x  => 0x5E
+    accumulator => 0x4A,
+    zero_page   => 0x46,
+    zero_page_x => 0x56,
+    absolute    => 0x4E,
+    absolute_x  => 0x5E
 };
 
 sub accumulator {
@@ -27,7 +27,7 @@ sub accumulator {
 
     $reg->{ pc }++;
 }
-	
+    
 
 sub absolute_x {
     my $self = shift;
@@ -57,5 +57,26 @@ sub do_op {
     $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $self->temp == 0;
     $self->RAM_write( $self->temp2 => $self->temp );
 }
+
+=head1 AUTHOR
+
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2007 by Brian Cassidy
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=head1 SEE ALSO
+
+=over 4 
+
+=item * L<CPU::Emulator::6502>
+
+=back
+
+=cut
 
 1;

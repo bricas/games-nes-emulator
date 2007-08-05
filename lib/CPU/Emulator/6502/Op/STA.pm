@@ -3,13 +3,13 @@ package CPU::Emulator::6502::Op::STA;
 use strict;
 
 use constant ADDRESSING => {
-	zero_page   => 0x85,
-	zero_page_x => 0x95,
-	absolute    => 0x8D,
-	absolute_x  => 0x9D,
-	absolute_y  => 0x99,
-	indirect_x  => 0x81,
-	indirect_y  => 0x91
+    zero_page   => 0x85,
+    zero_page_x => 0x95,
+    absolute    => 0x8D,
+    absolute_x  => 0x9D,
+    absolute_y  => 0x99,
+    indirect_x  => 0x81,
+    indirect_y  => 0x91
 };
 
 *absolute_x = \&indirect_y;
@@ -28,5 +28,26 @@ sub indirect_x {
     my( $self ) = @_;
     $self->RAM_write( $self->temp2, $self->registers->{ acc } );
 }
+
+=head1 AUTHOR
+
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2007 by Brian Cassidy
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=head1 SEE ALSO
+
+=over 4 
+
+=item * L<CPU::Emulator::6502>
+
+=back
+
+=cut
 
 1;
