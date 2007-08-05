@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::LDA;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0xA9,
@@ -12,6 +13,36 @@ use constant ADDRESSING => {
     indirect_x  => 0xA1,
     indirect_y  => 0xB1
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::LDA - Load accumulator from memory
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 absolute_y( )
+
+=head2 indirect_x( )
+
+=head2 indirect_y( )
+
+=head2 do_op( )
+
+=cut
 
 *immediate = \&do_op;
 *zero_page = \&do_op;

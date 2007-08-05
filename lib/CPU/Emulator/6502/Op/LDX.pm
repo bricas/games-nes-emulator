@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::LDX;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0xA2,
@@ -9,6 +10,30 @@ use constant ADDRESSING => {
     absolute    => 0xAE,
     absolute_y  => 0xBE,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::LDX - Load X register from memory
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 zero_page_y( )
+
+=head2 absolute( )
+
+=head2 absolute_y( )
+
+=head2 do_op( )
+
+=cut
 
 *immediate = \&do_op;
 *zero_page = \&do_op;

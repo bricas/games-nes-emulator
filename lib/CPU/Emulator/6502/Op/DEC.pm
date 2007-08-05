@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::DEC;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     zero_page   => 0xC6,
@@ -9,6 +10,28 @@ use constant ADDRESSING => {
     absolute_x  => 0xDE,
 };
 
+=head1 NAME
+
+CPU::Emulator::6502::Op::DEC - Decrement by one
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 do_op( )
+
+=cut
+
 sub absolute_x {
     my $self = shift;
     $self->cycle_counter( $self->cycle_counter + 1 );
@@ -16,7 +39,7 @@ sub absolute_x {
 }
 
 *zero_page = \&do_op;
-*zero_page_z = \&do_op;
+*zero_page_x = \&do_op;
 *absolute = \&do_op;
 
 sub do_op {

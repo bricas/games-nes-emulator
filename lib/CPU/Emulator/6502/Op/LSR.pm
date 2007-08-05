@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::LSR;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     accumulator => 0x4A,
@@ -9,6 +10,30 @@ use constant ADDRESSING => {
     absolute    => 0x4E,
     absolute_x  => 0x5E
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::LSR - Shift right
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 accumulator( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 do_op( )
+
+=cut
 
 sub accumulator {
     my $self = shift;

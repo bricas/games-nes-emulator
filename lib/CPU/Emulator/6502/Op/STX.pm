@@ -1,12 +1,33 @@
 package CPU::Emulator::6502::Op::STX;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     zero_page   => 0x86,
     zero_page_y => 0x96,
     absolute    => 0x8E,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::STX - Store the X register in memory
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 zero_page( )
+
+=head2 zero_page_y( )
+
+=head2 absolute( )
+
+=head2 do_op( )
+
+=cut
 
 *zero_page = \&do_op;
 *zero_page_y = \&do_op;

@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::AND;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0x29,
@@ -12,6 +13,36 @@ use constant ADDRESSING => {
     indirect_x  => 0x21,
     indirect_y  => 0x31
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::AND - Logical AND memory with accumulator
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 absolute_y( )
+
+=head2 indirect_x( )
+
+=head2 indirect_y( )
+
+=head2 do_op( )
+
+=cut
 
 *immediate = \&do_op;
 *zero_page = \&do_op;

@@ -1,12 +1,33 @@
 package CPU::Emulator::6502::Op::CPX;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0xE0,
     zero_page   => 0xE4,
     absolute    => 0xEC,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::CPX - Compare the X register
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 absolute( )
+
+=head2 do_op( )
+
+=cut
 
 *immediate = \&do_op;
 *zero_page = \&do_op;

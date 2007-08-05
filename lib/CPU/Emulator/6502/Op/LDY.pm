@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::LDY;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0xA0,
@@ -10,11 +11,34 @@ use constant ADDRESSING => {
     absolute_x  => 0xBC
 };
 
+=head1 NAME
+
+CPU::Emulator::6502::Op::LDY - Load Y register from memory
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 do_op( )
+
+=cut
+
 *immediate = \&do_op;
 *zero_page = \&do_op;
 *zero_page_x = \&do_op;
-*absolute = \&do_op;
-
+*absolute = \&do_op;
 
 sub absolute_x {
     my $self = shift;

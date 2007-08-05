@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::ROL;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     accumulator => 0x2A,
@@ -9,6 +10,30 @@ use constant ADDRESSING => {
     absolute    => 0x2E,
     absolute_x  => 0x3E,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::ROL - Rotate left through carry
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 accumulator( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 do_op( )
+
+=cut
 
 sub accumulator {
     my $self = shift;
@@ -38,7 +63,7 @@ sub absolute_x {
 
 *zero_page = \&do_op;
 *zero_page_x = \&do_op;
-*absolute = \&dop;
+*absolute = \&do_op;
 
 sub do_op {
     my $self = shift;

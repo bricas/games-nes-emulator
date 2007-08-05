@@ -1,12 +1,33 @@
 package CPU::Emulator::6502::Op::CPY;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0xC0,
     zero_page   => 0xC4,
     absolute    => 0xCC,
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::CPY - Compare the Y register
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 absolute( )
+
+=head2 do_op( )
+
+=cut
 
 *immediate = \&do_op;
 *zero_page = \&do_op;

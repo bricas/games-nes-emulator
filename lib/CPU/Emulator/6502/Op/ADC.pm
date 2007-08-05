@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::ADC;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     immediate   => 0x69,
@@ -12,6 +13,36 @@ use constant ADDRESSING => {
     indirect_x  => 0x61,
     indirect_y  => 0x71
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::ADC - Add memory to accumulator with carry
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 absolute_y( )
+
+=head2 indirect_x( )
+
+=head2 indirect_y( )
+
+=head2 do_op( )
+
+=cut
 
 *immediate = \&do_op;
 *zero_page = \&do_op;

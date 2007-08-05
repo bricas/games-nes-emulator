@@ -1,6 +1,7 @@
 package CPU::Emulator::6502::Op::STA;
 
 use strict;
+use warnings;
 
 use constant ADDRESSING => {
     zero_page   => 0x85,
@@ -11,6 +12,36 @@ use constant ADDRESSING => {
     indirect_x  => 0x81,
     indirect_y  => 0x91
 };
+
+=head1 NAME
+
+CPU::Emulator::6502::Op::STA - Store accumulator in memory
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 immediate( )
+
+=head2 zero_page( )
+
+=head2 zero_page_x( )
+
+=head2 absolute( )
+
+=head2 absolute_x( )
+
+=head2 absolute_y( )
+
+=head2 indirect_x( )
+
+=head2 indirect_y( )
+
+=head2 do_op( )
+
+=cut
 
 *absolute_x = \&indirect_y;
 *absolute_y = \&indirect_y;
