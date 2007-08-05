@@ -72,7 +72,7 @@ sub absolute_x {
 	my $reg  = $self->registers;
 	my $mem  = $self->memory;
 
-	$self->temp2( $mem->[ $reg->{ pc } + 1 ] ( $mem->[ $reg->{ pc } + 2 ] << 8) + $reg->{ x } );
+	$self->temp2( $mem->[ $reg->{ pc } + 1 ] + ( $mem->[ $reg->{ pc } + 2 ] << 8) + $reg->{ x } );
 
 	$reg->{ pc } += 3;
 	$self->cycle_counter( $self->cycle_counter + 2 );

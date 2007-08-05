@@ -28,6 +28,11 @@ use constant CLEAR_UNUSED    => 0xDF;
 use constant CLEAR_OVERFLOW  => 0xBF;
 use constant CLEAR_SIGN      => 0x7F;
 
+use constant CLEAR_SZC  => CLEAR_SIGN & CLEAR_ZERO & CLEAR_CARRY;
+use constant CLEAR_SOZ  => CLEAR_SIGN & CLEAR_OVERFLOW & CLEAR_ZERO;
+use constant CLEAR_ZS   => CLEAR_ZERO & CLEAR_SIGN;
+use constant CLEAR_ZOCS => CLEAR_ZERO & CLEAR_OVERFLOW & CLEAR_CARRY & CLEAR_SIGN;
+
 # interrupt constants
 use constant BRK    => 0x01;
 use constant IRQ    => 0x02;
