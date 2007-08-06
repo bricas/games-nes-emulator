@@ -11,7 +11,7 @@ use Games::NES::Emulator::PPU; # graphics
 use Games::NES::Emulator::APU; # audio
 use Games::NES::Emulator::Input; # controller
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 __PACKAGE__->mk_accessors( qw( rom cpu apu ppu mapper inputs running ) );
 
