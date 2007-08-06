@@ -1,4 +1,14 @@
 Revision history for Perl extension Games::NES::Emulator.
 
+0.02  Mon Aug 06 2007
+    - 6502 CPU work
+        - debug routine
+        - basic op execution
+        - interrupt handling
+    - Massive addition of 6502 operations
+    - Base mapper (Mapper 0) added
+    - PPU palette added
+    - Initial input class added
+
 0.01  Mon Jul 30 2007
     - original version
