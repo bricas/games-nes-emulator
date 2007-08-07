@@ -9,7 +9,7 @@ __PACKAGE__->mk_accessors( qw( memory palette name_table ) );
 
 =head1 NAME
 
-Games::NES::Emulator::PPU - NES VRAM
+Games::NES::Emulator::PPU::Memory - NES VRAM
 
 =head1 SYNOPSIS
 

@@ -9,7 +9,7 @@ use constant ADDRESSING => {
 
 =head1 NAME
 
-CPU::Emulator::6502::Op::SEC - Set decimal mode
+CPU::Emulator::6502::Op::SED - Set decimal mode
 
 =head1 SYNOPSIS
 

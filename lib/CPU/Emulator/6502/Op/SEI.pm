@@ -9,7 +9,7 @@ use constant ADDRESSING => {
 
 =head1 NAME
 
-CPU::Emulator::6502::Op::SEC - Set the interrupt disable bit
+CPU::Emulator::6502::Op::SEI - Set the interrupt disable bit
 
 =head1 SYNOPSIS
 
