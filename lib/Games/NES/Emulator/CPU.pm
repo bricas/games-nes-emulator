@@ -116,6 +116,44 @@ sub RAM_write {
 
             $ppu->VRAM->increment( $data & 0x04 ? 32 : 1 );
         }
+        elsif( $ppu_addr == 0x2001 ) {
+            $reg->{ control2 } = $data;
+        }
+        elsif( $ppu_addr == 0x2002 ) {
+        }
+        elsif( $ppu_addr == 0x2003 ) {
+            $reg->{ SPRRAM_addr } = $data;
+        }
+        elsif( $ppu_addr == 0x2004 ) {
+            $ppu->SPRRAM->[ $reg->{ SPRRAM_addr } ] = $data;
+        }
+        elsif( $ppu_addr == 0x2005 ) {
+            if( $self->toggle ) {
+                $reg->{ VRAM_temp_addr } = ( $reg->{ VRAM_temp_addr } & 0xffe0 ) | ( ( $data & 0xf8 ) >> 3 );
+                $ppu->draw->{ x_pixel_offset } = $data & 0x7;
+            }
+            else {
+                $reg->{ VRAM_temp_addr } = ( $reg->{ VRAM_temp_addr } & 0xfc1f ) | ( ( $data & 0xf8 ) << 2 );
+                $reg->{ VRAM_temp_addr } = ( $reg->{ VRAM_temp_addr } & 0x8fff ) | ( ( $data & 0x7 ) << 12 );
+            }
+            $self->toggle( !$self->toggle );
+        }
+        elsif( $ppu_addr == 0x2006 ) {
+            if( $self->toggle ) {
+                $reg->{ VRAM_temp_addr } = ( $reg->{ VRAM_temp_addr } & 0xc0ff ) | ( ( $data & 0x3f ) << 8 );
+				$reg->{ VRAM_temp_addr } &= 0x3fff;
+            }
+            else {
+                $reg->{ VRAM_temp_addr } = ( $reg->{ VRAM_temp_addr } & 0xff00 ) | $data;
+                $reg->{ VRAM_addr } = $reg->{ VRAM_temp_addr };
+            }
+            $self->toggle( !$self->toggle );
+        }
+        elsif( $ppu_addr == 0x2007 ) {
+            $ppu->VRAM->write( $reg->{ VRAM_addr }, $data, 1 );
+        }
+
+        return;
     }
     elsif( $block == 2 ) {
     }
