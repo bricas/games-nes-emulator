@@ -103,12 +103,11 @@ sub init {
     my $reg = $self->registers;
 
     $self->memory( [ ( undef ) x 0xFF ] );
-    $reg->{ status } = SET_UNUSED;
-
     for( @registers ) {
         $reg->{ $_ } =  0;
     }
 
+    $reg->{ status } = SET_UNUSED;
     $self->create_instruction_table;
 }
 
@@ -273,14 +272,14 @@ sub debug {
 
     my $status = $reg->{ status };
     my $a_status = '';
-    $a_status .= vec( $status, 7, 1 ) ? 'S' : '.';
-    $a_status .= vec( $status, 6, 1 ) ? 'V' : '.';
-    $a_status .= vec( $status, 5, 1 ) ? '-' : '.';
-    $a_status .= vec( $status, 4, 1 ) ? 'B' : '.';
-    $a_status .= vec( $status, 3, 1 ) ? 'D' : '.';
-    $a_status .= vec( $status, 2, 1 ) ? 'I' : '.';
-    $a_status .= vec( $status, 1, 1 ) ? 'Z' : '.';
-    $a_status .= vec( $status, 0, 1 ) ? 'C' : '.';
+    $a_status .= $status & SET_SIGN ? 'N' : '.';
+    $a_status .= $status & SET_OVERFLOW ? 'V' : '.';
+    $a_status .= $status & SET_UNUSED ? '-' : '.';
+    $a_status .= $status & SET_BRK ? 'B' : '.';
+    $a_status .= $status & SET_DECIMAL ? 'D' : '.';
+    $a_status .= $status & SET_INTERRUPT ? 'I' : '.';
+    $a_status .= $status & SET_ZERO ? 'Z' : '.';
+    $a_status .= $status & SET_CARRY ? 'C' : '.';
 
     my $addr = $self->current_op_address;
     $t->row(
