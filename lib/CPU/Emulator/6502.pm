@@ -123,14 +123,16 @@ sub create_instruction_table {
     my $self  = shift;
     my %table;
 
+    my $class = __PACKAGE__ . '::Op';
     my $locator = Module::Pluggable::Object->new(
-        search_path => __PACKAGE__ . '::Op',
+        search_path => $class,
         require     => 1
     );
     
     for my $instruction ( $locator->plugins ) {
         my $ops = $instruction->INSTRUCTIONS;
-        @table{ keys %$ops } = values %$ops;
+        ( my $name = $instruction ) =~ s{$class\::}{};
+        @table{ keys %$ops } = map { $_->{ name } = $name; $_ } values %$ops;
     }
 
     $self->instruction_table( \%table );
@@ -283,7 +285,7 @@ sub debug {
     my $addr = $self->current_op_address;
     $t->row(
         $addr ? sprintf( '%x', $addr ) : '-',
-        defined $self->current_op ? sprintf( '%x', $self->current_op ) : '-',
+        defined $self->current_op ? sprintf( '%s', $self->instruction_table->{ $self->current_op }->{ name } ) : '-',
         ( map { sprintf( '%x', $reg->{ $_ } ) } qw( sp acc x y ) ),
         $a_status,
     );
