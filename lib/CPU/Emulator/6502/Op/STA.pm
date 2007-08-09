@@ -58,7 +58,7 @@ Stores the accumulator in memory address C<$addr>.
 =cut
 
 sub sta {
-    my( $self ) = @_;
+    my $self = shift;
     $self->RAM_write( shift, $self->registers->{ acc } );
 }
 

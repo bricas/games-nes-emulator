@@ -52,9 +52,26 @@ sub RAM_read {
     my $c = $self->context;
     my $block = $addr >> 13;
 
-    # TODO other cases
     if( $block == 0 ) {
         return $self->SUPER::RAM_read( $addr & 0x7FF );
+    }
+    elsif( $block == 1 ) {
+        my $ppu_addr = ( $addr & 0x7 ) + 0x2000;
+        my $ppu = $c->ppu;
+        my $reg = $ppu->registers;
+
+        if( $ppu_addr == 0x2002 ) {
+            $self->toggle( 1 );
+            my $val = $reg->{ status };
+            $reg->{ status } &= 0x7f;
+            return $val;
+        }
+        elsif( $ppu_addr == 0x2007 ) {
+            return $ppu->VRAM->read( $reg->{ VRAM_addr }, 1 );
+        }
+    }
+    elsif( $block == 2 ) {
+        # TODO cases for block 2
     }
     elsif( $block == 3 ) {
         return $self->SUPER::RAM_read( $addr );
@@ -78,7 +95,18 @@ sub RAM_write {
         return $self->SUPER::RAM_write( ( $addr & 0x7FF ) => $data );
     }
     elsif( $block == 1 ) {
-        warn "PPU";
+        my $ppu_addr = ( $addr & 0x7 ) + 0x2000;
+        my $ppu = $c->ppu;
+        my $reg = $ppu->registers;
+
+        if( $ppu_addr == 0x2000 ) {
+            $reg->{ control1 } = $data;
+            $reg->{ VRAM_temp_addr } = ( $reg->{ VRAM_temp_addr } & 0xF3FF) | ( $data & 0x3 ) << 10;		
+
+            $ppu->VRAM->increment( $data & 0x04 ? 32 : 1 );
+        }
+    }
+    elsif( $block == 2 ) {
     }
     elsif( $block == 3 ) {
         $self->SUPER::RAM_write( $addr => $data );

@@ -5,7 +5,7 @@ use warnings;
 
 use base qw( Class::Accessor::Fast );
 
-__PACKAGE__->mk_accessors( qw( memory palette name_table ) );
+__PACKAGE__->mk_accessors( qw( memory palette name_table increment ) );
 
 =head1 NAME
 
@@ -28,6 +28,21 @@ sub init {
     $self->name_table( [
         map { [ (0) x (0x400 + 1) ] } ( 0..3 )
     ] );
+    $self->increment( 1 );
+}
+
+=head2 read( $addr, $spu_read )
+
+=cut
+
+sub read {
+}
+
+=head2 write( $addr => $data, $cpu_read )
+
+=cut
+
+sub write {
 }
 
 =head1 AUTHOR
