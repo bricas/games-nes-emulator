@@ -1,5 +1,19 @@
 Revision history for Perl extension Games::NES::Emulator.
 
+0.03  Mon Aug 13 2007
+    - Major refactoring of 6502 instructions.
+    - Util methods added:
+        - set_nz( $value )
+        - push_stack( $value )
+        - pop_stack( $value )
+        - branch_if( $bool )
+        - make_word( $lo, hi )
+        - lo_byte( $word )
+        - hi_byte( $word )
+    - Fixed up debugging info for status register
+    - Added the name of the op to the debug data
+    - A little bit of PPU work done
+
 0.02  Mon Aug 06 2007
     - 6502 CPU work
         - debug routine
