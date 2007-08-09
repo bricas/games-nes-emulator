@@ -42,8 +42,9 @@ use constant APUIRQ => 0x10;
 
 __PACKAGE__->mk_accessors(
     qw( registers memory interrupt_line toggle
-    frame_counter cycle_counter current_op
-    instruction_table )
+    frame_counter cycle_counter instruction_table
+    current_op current_op_address
+    )
 );
 
 my @registers = qw( acc x y pc sp status );
@@ -245,12 +246,18 @@ Reads the op from memory then moves the program counter forward 1.
 sub get_instruction {
     my $self = shift;
     my $reg  = $self->registers;
+    
+    $self->current_op_address( $reg->{ pc } );
     my $op = $self->RAM_read( $reg->{ pc }++ );
-
     return $self->current_op( $op );
 }
 
 =head2 debug( )
+
+This will return of a string with some debugging info, including: the current
+instruction, the pc location of the instruction, 10 lines of context from the
+PRG at the pc location and the state of the stack, sp, a, x, y and status
+registers after the op has executed.
 
 =cut
 
@@ -259,7 +266,7 @@ sub debug {
     my $reg = $self->registers;
 
     my $t = Text::SimpleTable->new(
-        [ 4, 'PC' ], [ 4, 'SP' ], [ 2, 'A' ], [ 2, 'X' ], [ 2, 'Y' ], [ 8, 'Status' ], [ 4, 'OP' ],
+        [ 4, 'PC' ], [ 4, 'OP' ], [ 4, 'SP' ], [ 2, 'A' ], [ 2, 'X' ], [ 2, 'Y' ], [ 8, 'Status' ],
     );
 
     my $status = $reg->{ status };
@@ -273,10 +280,12 @@ sub debug {
     $a_status .= vec( $status, 1, 1 ) ? 'Z' : '.';
     $a_status .= vec( $status, 0, 1 ) ? 'C' : '.';
 
+    my $addr = $self->current_op_address;
     $t->row(
-        ( map { sprintf( '%x', $reg->{ $_ } ) } qw( pc sp acc x y ) ),
-        $a_status,
+        $addr ? sprintf( '%x', $addr ) : '-',
         defined $self->current_op ? sprintf( '%x', $self->current_op ) : '-',
+        ( map { sprintf( '%x', $reg->{ $_ } ) } qw( sp acc x y ) ),
+        $a_status,
     );
 
     my $t_stack = Text::SimpleTable->new(
@@ -289,8 +298,13 @@ sub debug {
 
     for( 0..9 ) {
         $t_stack->row( sprintf( '%x', $self->memory->[ 0x1FF - $_ ] ) );
-        my $line = $reg->{ pc } + $_;
-        $t_code->row( sprintf( '%x', $line ), sprintf( '%x', $self->memory->[ $line ] ) );
+        if( $addr ) {
+            my $line = $addr + $_;
+            $t_code->row( sprintf( '%x', $line ), sprintf( '%x', $self->memory->[ $line ] ) );
+        }
+        else {
+            $t_code->row( '-', '-' );
+        }
     }
 
     my @s_rows = split( "\n", $t_stack->draw );
