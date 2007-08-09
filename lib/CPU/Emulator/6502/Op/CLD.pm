@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::CLD;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xD8,
+use constant INSTRUCTIONS => {
+    0xD8 => {
+        cycles => 2,
+        code => \&cld,
+    }
 };
 
 =head1 NAME
@@ -17,15 +20,17 @@ CPU::Emulator::6502::Op::CLD - Clear decimal mode
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 cld( )
+
+Clears the decimal mode flag.
 
 =cut
 
-sub implied {
+sub cld {
     my $self = shift;
     my $reg = $self->registers;
+
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_DECIMAL;
-    $reg->{ pc }++;
 }
 
 =head1 AUTHOR

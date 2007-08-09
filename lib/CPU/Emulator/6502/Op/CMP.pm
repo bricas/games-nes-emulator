@@ -3,16 +3,49 @@ package CPU::Emulator::6502::Op::CMP;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0xC9,
-    zero_page   => 0xC5,
-    zero_page_x => 0xD5,
-    absolute    => 0xCD,
-    absolute_x  => 0xDD,
-    absolute_y  => 0xD9,
-    indirect_x  => 0xC1,
-    indirect_y  => 0xD1
+use constant INSTRUCTIONS => {
+    0xC9 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&cmp,
+    },
+    0xC5 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&cmp,
+    },
+    0xD5 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&cmp,
+    },
+    0xCD => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&cmp,
+    },
+    0xDD => {
+        addressing => 'absolute_x',
+        cycles => 4,
+        code => \&cmp,
+    },
+    0xD9 => {
+        addressing => 'absolute_y',
+        cycles => 4,
+        code => \&cmp,
+    },
+    0xC1 => {
+        addressing => 'indirect_x',
+        cycles => 6,
+        code => \&cmp,
+    },
+    0xD1 => {
+        addressing => 'indirect_y',
+        cycles => 5,
+        code => \&cmp,
+    },
 };
+
 
 =head1 NAME
 
@@ -24,45 +57,20 @@ CPU::Emulator::6502::Op::CMP - Compare accumulator
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 cmp( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 absolute_y( )
-
-=head2 indirect_x( )
-
-=head2 indirect_y( )
-
-=head2 do_op( )
+Compare the accumulator with C<$addr>.
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-*absolute_x = \&do_op;
-*absolute_y = \&do_op;
-*indirect_x = \&do_op;
-*indirect_y = \&do_op;
-
-sub do_op {
+sub cmp {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->temp( $reg->{ acc } - $self->memory->[ $self->temp2 ] );
+    my $temp = $reg->{ acc } - $self->memory->[ shift ];
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_SZC;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if !($self->temp & 0xff);
-    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp < 0x100;
+    $self->set_nz( $temp );
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $temp < 0x100;
 }
 
 =head1 AUTHOR

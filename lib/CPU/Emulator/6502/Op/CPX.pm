@@ -3,10 +3,22 @@ package CPU::Emulator::6502::Op::CPX;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0xE0,
-    zero_page   => 0xE4,
-    absolute    => 0xEC,
+use constant INSTRUCTIONS => {
+    0xE0 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&cpx
+    },
+    0xE4 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&cpx
+    },
+    0xEC => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&cpx
+    }
 };
 
 =head1 NAME
@@ -19,30 +31,20 @@ CPU::Emulator::6502::Op::CPX - Compare the X register
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 cpx( $addr )
 
-=head2 zero_page( )
-
-=head2 absolute( )
-
-=head2 do_op( )
+Compares the X register to the data held at $addr.
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*absolute = \&do_op;
-
-sub do_op {
+sub cpx {
     my $self = shift;
     my $reg = $self->registers;
     
-    $self->temp( $reg->{ x } - $self->memory->[ $self->temp2 ] );
+    my $temp = $reg->{ x } - $self->memory->[ shift ];
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_SZC;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if !($self->temp & 0xff);
-    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp < 0x100;
+    $self->set_nz( $temp );
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $temp < 0x100;
 }
 
 =head1 AUTHOR

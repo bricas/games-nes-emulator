@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::RTS;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x60,
+use constant INSTRUCTIONS => {
+    0x60 => {
+        cycles => 6,
+        code => \&rts,
+    }
 };
 
 =head1 NAME
@@ -17,20 +20,21 @@ CPU::Emulator::6502::Op::RTS - Return from subroutine
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 rts( )
+
+Return from subroutine.
 
 =cut
 
-sub implied {
+sub rts {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ sp } += 2;
-    $reg->{ pc } = $self->memory->[ $reg->{ sp } - 1 + 0x100 ];
-    $reg->{ pc } = $reg->{ pc } + ($self->memory->[$reg->{ pc } + 0x100] << 8);
+    my $lo = $self->pop_stack;
+    my $hi = $self->pop_stack;
 
+    $reg->{ pc } = $self->make_word( $lo, $hi );
     $reg->{ pc }++;
-    $self->cycle_counter( $self->cycle_counter + 4 );
 }
 
 =head1 AUTHOR

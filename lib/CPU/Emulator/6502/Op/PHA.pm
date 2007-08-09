@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::PHA;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x48,
+use constant INSTRUCTIONS => {
+    0x48 => {
+        cycles => 3,
+        code   => \&pha,
+    }
 };
 
 =head1 NAME
@@ -17,18 +20,17 @@ CPU::Emulator::6502::Op::PHA - Push accumulator on the stack
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 pha( )
+
+Pushes the accumulator onto the stack
 
 =cut
 
-sub implied {
+sub pha {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->memory->[ $reg->{ sp } + 0x100 ] = $reg->{ acc };
-    $reg->{ sp }--;
-    $reg->{ pc }++;
-    $self->cycle_counter( $self->cycle_counter + 1 );
+    $self->push_stack( $reg->{ acc } );
 }
 
 =head1 AUTHOR

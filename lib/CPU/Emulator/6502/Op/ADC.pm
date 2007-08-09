@@ -3,15 +3,47 @@ package CPU::Emulator::6502::Op::ADC;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0x69,
-    zero_page   => 0x65,
-    zero_page_x => 0x75,
-    absolute    => 0x6D,
-    absolute_x  => 0x7D,
-    absolute_y  => 0x79,
-    indirect_x  => 0x61,
-    indirect_y  => 0x71
+use constant INSTRUCTIONS => {
+    0x69 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&adc,
+    },
+    0x65 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&adc,
+    },
+    0x75 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&adc,
+    },
+    0x6D => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&adc,
+    },
+    0x7D => {
+        addressing => 'absolute_x',
+        cycles => 4,
+        code => \&adc,
+    },
+    0x79 => {
+        addressing => 'absolute_y',
+        cycles => 4,
+        code => \&adc,
+    },
+    0x61 => {
+        addressing => 'indirect_x',
+        cycles => 6,
+        code => \&adc,
+    },
+    0x71 => {
+        addressing => 'indirect_y',
+        cycles => 5,
+        code => \&adc,
+    },
 };
 
 =head1 NAME
@@ -24,54 +56,31 @@ CPU::Emulator::6502::Op::ADC - Add memory to accumulator with carry
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 adc( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 absolute_y( )
-
-=head2 indirect_x( )
-
-=head2 indirect_y( )
-
-=head2 do_op( )
+Adds data at C<$addr> to the accumulator
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-*absolute_x = \&do_op;
-*absolute_y = \&do_op;
-*indirect_x = \&do_op;
-*indirect_y = \&do_op;
-
-sub do_op {
+sub adc {
     my $self = shift;
     my $mem  = $self->memory;
     my $reg  = $self->registers;
 
-    $self->temp( $reg->{ acc } + $mem->[ $self->temp2 ] );
-
-    $self->temp( $self->temp + 1 ) if $reg->status & CPU::Emulator::6502::SET_CARRY;
+    my $val  = $mem->[ shift ];
+    my $temp = $reg->{ acc } + $val;
+    $temp += 1 if $reg->status & CPU::Emulator::6502::SET_CARRY;
 
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZOCS;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO unless $self->temp & 0xFF;
     $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp > 0xFF;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
 
-    if( !( ( $reg->{ acc } ^ $mem->[ $self->temp2 ] ) & 0x80 ) && ( ( $reg->{ acc } ^ $self->temp ) & 0x80 ) ) {
+    if( !( ( $reg->{ acc } ^ $val ) & 0x80 ) && ( ( $reg->{ acc } ^ $temp ) & 0x80 ) ) {
         $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW;
     }
 
     $reg->{ acc } = $self->temp & 0xFF;
+
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

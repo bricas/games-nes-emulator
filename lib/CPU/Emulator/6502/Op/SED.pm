@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::SED;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xF8,
+use constant INSTRUCTIONS => {
+    0xF8 => {
+        cycles => 2,
+        code => \&sed,
+    }
 };
 
 =head1 NAME
@@ -17,17 +20,17 @@ CPU::Emulator::6502::Op::SED - Set decimal mode
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 sed( )
+
+Sets the decimal mode flag.
 
 =cut
 
-sub implied {
+sub sed {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_DECIMAL;
-    $reg->{ status } += CPU::Emulator::6502::SET_DECIMAL;
-    $reg->{ pc }++;
+    $reg->{ status } |= CPU::Emulator::6502::SET_DECIMAL;
 }
 
 =head1 AUTHOR

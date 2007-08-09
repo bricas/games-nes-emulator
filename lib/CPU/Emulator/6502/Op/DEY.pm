@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::DEY;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x88,
+use constant INSTRUCTIONS => {
+    0x88 => {
+        cycles => 2,
+        code  => \&dey,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,18 @@ CPU::Emulator::6502::Op::DEY - Decrement the Y register
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 dey( )
+
+Decrements the Y register by 1.
 
 =cut
 
-sub implied {
+sub dey {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ y } = ( $reg->{ y } - 1 ) & 0xff;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if !$reg->{ y };
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ y } & 0x80;
-
-    $reg->{ pc }++;         
+    $self->set_nz( $reg->{ y } );
 }
 
 =head1 AUTHOR

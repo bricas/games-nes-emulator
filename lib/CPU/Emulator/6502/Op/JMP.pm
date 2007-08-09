@@ -3,9 +3,17 @@ package CPU::Emulator::6502::Op::JMP;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    absolute => 0x4C,
-    indirect => 0x6C
+use constant INSTRUCTIONS => {
+    0x4C => {
+        addressing => 'absolute',
+        cycles => 3,
+        code => \&jmp,
+    },
+    0x6C => {
+        addressing => 'indirect',
+        cycles => 5,
+        code => \&jmp,
+    }
 };
 
 =head1 NAME
@@ -18,24 +26,15 @@ CPU::Emulator::6502::Op::JMP - Jump
 
 =head1 METHODS
 
-=head2 absolute( )
+=head2 jmp( $addr )
+
+Jump to C<$addr>.
 
 =cut
 
-sub absolute {
+sub jmp {
     my $self = shift;
-    $self->cycle_counter( $self->cycle_counter + 1 );
-    $self->registers->{ pc } = $self->temp2;
-}
-
-=head2 indirect( )
-
-=cut
-
-sub indirect {
-    my $self = shift;
-    $self->cycle_counter( $self->cycle_counter + 3 );
-    $self->registers->{ pc } = $self->memory->[ $self->temp2 ] + ( $self->memory->[ $self->temp2 + 1 ] << 8 )
+    $self->registers->{ pc } = shift;
 }
 
 =head1 AUTHOR

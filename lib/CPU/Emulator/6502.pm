@@ -43,7 +43,7 @@ use constant APUIRQ => 0x10;
 __PACKAGE__->mk_accessors(
     qw( registers memory interrupt_line toggle
     frame_counter cycle_counter current_op
-    temp temp2 instruction_table )
+    instruction_table )
 );
 
 my @registers = qw( acc x y pc sp status );
@@ -120,7 +120,7 @@ namespace and creates a table.
 
 sub create_instruction_table {
     my $self  = shift;
-    my $table = { };
+    my %table;
 
     my $locator = Module::Pluggable::Object->new(
         search_path => __PACKAGE__ . '::Op',
@@ -128,15 +128,22 @@ sub create_instruction_table {
     );
     
     for my $instruction ( $locator->plugins ) {
-        for my $name ( keys %{ $instruction->ADDRESSING } ) {
-            $table->{ $instruction->ADDRESSING->{ $name } } = {
-                mode => $name,
-                sub  => $instruction . "::$name"
-            }
-        }
+        my $ops = $instruction->INSTRUCTIONS;
+        @table{ keys %$ops } = values %$ops;
     }
 
-    $self->instruction_table( $table );
+    $self->instruction_table( \%table );
+}
+
+=head2 reset( )
+
+Simulate a hardware reset or power-on
+
+=cut
+
+sub reset {
+    my $self = shift;
+    
 }
 
 =head2 RAM_read( $address )
@@ -169,21 +176,18 @@ sub interrupt_request {
     my $self = shift;
     my $mem  = $self->memory;
     my $reg  = $self->registers;
-    my $sp   = $reg->{ sp };
     my $pc   = $reg->{ pc };
     my $int  = $self->interrupt_line;
 
-    $mem->[ $sp + 0x100 ]     = ( ( $pc + 2 ) & 0xFF00 ) >> 8;
-    $mem->[ $sp - 1 + 0x100 ] = ( $pc + 2 ) & 0xFF;
-    $mem->[ $sp - 2 + 0x100 ] = $reg->{ status };
-
-    $reg->{ sp } -= 3;
+    $self->push_stack( $self->hi_byte( $pc + 2 ) );
+    $self->push_stack( $self->lo_byte( $pc + 2 ) );
+    $self->push_stack( $reg->{ status } );
 
     if( $int == IRQ ) {
-        $reg->{ pc } = $mem->[ 0xFFFE ] + ( $mem->[ 0xFFFF ] << 8 );
+        $reg->{ pc } = $self->make_word( $mem->[ 0xFFFE ], $mem->[ 0xFFFF ] );
     }
     elsif( $int == NMI ) {
-        $reg->{ pc } = $mem->[ 0xFFFA ] + ( $mem->[ 0xFFFB ] << 8 );
+        $reg->{ pc } = $self->make_word( $mem->[ 0xFFFA ], $mem->[ 0xFFFB ] );
     }
 
     $self->interrupt_line( 0 );
@@ -214,35 +218,34 @@ sub execute_instruction {
     my $table = $self->instruction_table;
     my $mode;
 
-    $mode = $table->{ $op }->{ mode } if $table->{ $op };
+    $mode = $table->{ $op }->{ addressing } if $table->{ $op };
 
-    $self->cycle_counter( $self->cycle_counter + 2 );
-    $self->temp( undef );
-
+    my @args;
     if( $mode and my $sub = CPU::Emulator::6502::Addressing->can( $mode ) ) {
-        $sub->( $self, $op );
+        @args = $sub->( $self );
     }
 
     if( !$table->{ $op } ) {
-        $reg->{ pc }++;
+        $self->cycle_counter( $self->cycle_counter + 2 );
     }
     else {
-        eval {
-            no strict 'refs';
-            $table->{ $op }->{ sub }->( $self );
-        }
+        no strict 'refs';
+        $table->{ $op }->{ code }->( $self, @args );
+        $self->cycle_counter( $self->cycle_counter + $table->{ $op }->{ cycles } );
     }
 
 }
 
 =head2 get_instruction( )
 
+Reads the op from memory then moves the program counter forward 1.
+
 =cut
 
 sub get_instruction {
     my $self = shift;
     my $reg  = $self->registers;
-    my $op = $self->RAM_read( $reg->{ pc } );
+    my $op = $self->RAM_read( $reg->{ pc }++ );
 
     return $self->current_op( $op );
 }
@@ -273,7 +276,7 @@ sub debug {
     $t->row(
         ( map { sprintf( '%x', $reg->{ $_ } ) } qw( pc sp acc x y ) ),
         $a_status,
-        sprintf( '%x', $self->current_op || 0 ),
+        defined $self->current_op ? sprintf( '%x', $self->current_op ) : '-',
     );
 
     my $t_stack = Text::SimpleTable->new(
@@ -301,6 +304,127 @@ sub debug {
     
 
     return $t->draw . $output;
+}
+
+=head2 set_nz( $value )
+
+Sets the Sign and Zero status flags based on C<$value>.
+
+=cut
+
+sub set_nz {
+    my $self = shift;
+    my $value = shift;
+    my $reg = $self->registers;
+
+    $reg->{ status } &= CLEAR_ZS;
+
+    if( $value & 0x80 ) {
+        $reg->{ status } |= SET_SIGN;
+    }
+    elsif( $value == 0 ) {
+        $reg->{ status } |= SET_ZERO;
+    }
+}
+
+=head2 push_stack( $value )
+
+Pushes C<$value> onto the stack and decrements the stack pointer.
+
+=cut
+
+sub push_stack {
+    my $self = shift;
+    my $value = shift;
+    my $reg  = $self->registers;
+
+    $self->memory->[ $reg->{ sp } + 0x100 ] = $value;
+    $reg->{ sp }--;
+}
+
+=head2 pop_stack( )
+
+Increments the stack pointer and returns the current stack value.
+
+=cut
+
+sub pop_stack {
+    my $self = shift;
+    my $reg  = $self->registers;
+
+    $reg->{ sp }++;
+    my $value = $self->memory->[ $reg->{ sp } + 0x100 ];
+    return $value;
+}
+
+=head2 branch_if( $bool )
+
+Branches if C<$bool> is true.
+
+=cut
+
+sub branch_if {
+    my $self = shift;
+    my $reg  = $self->registers;
+
+    # branch or not
+    if( !shift ) {
+        $reg->{ pc }++;
+        return;
+    }
+
+    my $old_pc = $reg->{ pc } - 1;
+    # address to branch to
+    my $data = $self->memory->[ $reg->{ pc } ];
+
+    if( $data & 0x80 ) {
+        $reg->{ pc } -= ( 128 - ( $data & 0x7f ) );
+    }
+    else {
+        $reg->{ pc } += $data;
+    }
+
+    # same mem page, add 1 cycles
+    if( ( $reg->{ pc } & 0xff00 ) == ( $old_pc & 0xff00 ) ) {
+        $self->cycle_counter( $self->cycle_counter + 1 );
+    }
+    # cross-page, add 2 cycles
+    else {
+        $self->cycle_counter( $self->cycle_counter + 2 );
+    }
+}
+
+=head2 make_word( $lo, $hi )
+
+Combines C<$lo> and C<$hi> into a 16-bit word.
+
+=cut
+
+sub make_word {
+    my ( $self, $lo, $hi ) = @_;
+    return $lo | ( $hi << 8 );
+}
+
+=head2 lo_byte( $word )
+
+Returns the lower byte of C<$word>.
+
+=cut
+
+sub lo_byte {
+    my( $self, $word ) = @_;
+    return $word & 0xff;
+}
+
+=head2 hi_byte( $word )
+
+Returns the higher byte of C<$word>.
+
+=cut
+
+sub hi_byte {
+    my( $self, $word ) = @_;
+    return ($word & 0xff00) >> 8;
 }
 
 =head1 AUTHOR

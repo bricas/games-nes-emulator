@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::CLC;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x18,
+use constant INSTRUCTIONS => {
+    0x18 => {
+        cycles => 2,
+        code => \&clc,
+    }
 };
 
 =head1 NAME
@@ -17,15 +20,17 @@ CPU::Emulator::6502::Op::CLC - Clear the carry flag
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 clc( )
+
+Clears the carry flag.
 
 =cut
 
-sub implied {
+sub clc {
     my $self = shift;
     my $reg = $self->registers;
+
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
-    $reg->{ pc }++;
 }
 
 =head1 AUTHOR

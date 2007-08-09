@@ -3,15 +3,47 @@ package CPU::Emulator::6502::Op::AND;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0x29,
-    zero_page   => 0x25,
-    zero_page_x => 0x35,
-    absolute    => 0x2D,
-    absolute_x  => 0x3D,
-    absolute_y  => 0x39,
-    indirect_x  => 0x21,
-    indirect_y  => 0x31
+use constant INSTRUCTIONS => {
+    0x29 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&and_op,
+    },
+    0x25 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&and_op,
+    },
+    0x35 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&and_op,
+    },
+    0x2D => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&and_op,
+    },
+    0x3D => {
+        addressing => 'absolute_x',
+        cycles => 4,
+        code => \&and_op,
+    },
+    0x39 => {
+        addressing => 'absolute_y',
+        cycles => 4,
+        code => \&and_op,
+    },
+    0x21 => {
+        addressing => 'indirect_x',
+        cycles => 6,
+        code => \&and_op,
+    },
+    0x31 => {
+        addressing => 'indirect_y',
+        cycles => 5,
+        code => \&and_op,
+    },
 };
 
 =head1 NAME
@@ -24,45 +56,18 @@ CPU::Emulator::6502::Op::AND - Logical AND memory with accumulator
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 and_op( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 absolute_y( )
-
-=head2 indirect_x( )
-
-=head2 indirect_y( )
-
-=head2 do_op( )
+Does a logical AND with data at C<$addr>.
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-*absolute_x = \&do_op;
-*absolute_y = \&do_op;
-*indirect_x = \&do_op;
-*indirect_y = \&do_op;
-
-sub do_op {
+sub and_op {
     my $self = shift;
-    my $mem  = $self->memory;
     my $reg  = $self->registers;
 
-    $reg->{ acc } &= $mem->[ $self->temp2 ];
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ acc } == 0x80;
+    $reg->{ acc } &= $self->memory->[ shift ];
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

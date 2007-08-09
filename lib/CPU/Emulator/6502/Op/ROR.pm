@@ -3,12 +3,31 @@ package CPU::Emulator::6502::Op::ROR;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    accumulator => 0x6A,
-    zero_page   => 0x66,
-    zero_page_x => 0x76,
-    absolute    => 0x6E,
-    absolute_x  => 0x7E,
+use constant INSTRUCTIONS => {
+    0x6A => {
+        cycles => 2,
+        code => \&ror_accumulator,
+    },
+    0x66 => {
+        addressing => 'zero_page',
+        cycles => 5,
+        code => \&ror,
+    },
+    0x76 => {
+        addressing => 'zero_page_x',
+        cycles => 6,
+        code => \&ror,
+    },
+    0x6E => {
+        addressing => 'absolute',
+        cycles => 6,
+        code => \&ror,
+    },
+    0x7E => {
+        addressing => 'absolute_x',
+        cycles => 7,
+        code => \&ror,
+    },
 };
 
 =head1 NAME
@@ -21,79 +40,47 @@ CPU::Emulator::6502::Op::ROR - Rotate right through carry
 
 =head1 METHODS
 
-=head2 accumulator( )
+=head2 ror_accumulator( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 do_op( )
+Rotate left through carry with accumulator.
 
 =cut
 
-sub accumulator {
+sub ror_accumulator {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ acc } |= 0x100 if $reg->{ status } & CPU::Emulator::6502::SET_CARRY;
 
-    if( $reg->{ acc } & 1 ) {
-        $reg->{ status } |= CPU::Emulator::6502::SET_CARRY;
-    }
-    else {
-        $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
-    }
+    $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $reg->{ acc } & 1;
 
     $reg->{ acc } = $reg->{ acc } >> 1;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ acc } & 0x80;
-
-    $reg->{ pc }++;
+    $self->set_nz( $reg->{ acc } );
 }
 
-sub absolute_x {
-    my $self = shift;
-    $self->cycle_counter( $self->cycle_counter + 3 );
-    do_op( $self );
-}
+=head2 ror( $addr )
 
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
+Rotate left through carry with C<$addr>.
 
-sub do_op {
+=cut
+
+sub ror {
     my $self = shift;
+    my $addr = shift;
     my $reg = $self->registers;
 
-    $self->temp( $self->memory->[ $self->temp2 ] );
-    $self->RAM_write( $self->temp2 => $self->temp );
+    my $temp = $self->memory->[ $addr ];
+    $temp |= 0x100 if $reg->{ status } & CPU::Emulator::6502::SET_CARRY;
 
-    $self->temp( $self->temp | 0x100 ) if $reg->{ status } & CPU::Emulator::6502::SET_CARRY;
+    $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $temp & 1;
 
-    if( $self->temp & 1 ) {
-        $reg->{ status } |= CPU::Emulator::6502::SET_CARRY;
-    }
-    else {
-        $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
-    }
+    $temp = $temp >> 1;
 
-    $self->temp( $self->temp >> 1 );
-
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-
-    $reg->{ status } += CPU::Emulator::6502::SET_ZERO if $self->temp == 0;
-    $reg->{ status } += CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
-
-    $self->RAM_write( $self->temp2 => $self->temp );
+    $self->set_nz( $temp );
+    $self->RAM_write( $addr => $temp );
 }
 
 =head1 AUTHOR

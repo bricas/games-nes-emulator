@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::DEX;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xCA,
+use constant INSTRUCTIONS => {
+    0xCA => {
+        cycles => 2,
+        code   => \&dex,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,18 @@ CPU::Emulator::6502::Op::DEX - Decrement the X register
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 dex( )
+
+Decrements the X register by 1.
 
 =cut
 
-sub implied {
+sub dex {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ x } = ( $reg->{ x } - 1 ) & 0xff;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if !$reg->{ x };
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ x } & 0x80;
-
-    $reg->{ pc }++;         
+    $self->set_nz( $reg->{ x } );
 }
 
 =head1 AUTHOR

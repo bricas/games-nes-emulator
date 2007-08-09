@@ -15,18 +15,20 @@ CPU::Emulator::6502::Addressing - Handle different addressing rules
 
 =head2 immediate( )
 
+Immediate addressing; immediately following the op.
+
 =cut
 
 sub immediate {
     my $self = shift;
     my $reg  = $self->registers;
 
-    $self->temp2( $reg->{ pc } + 1 );
-
-    $reg->{ pc } += 2;
+    return $reg->{ pc }++;
 }
 
 =head2 zero_page( )
+
+Zero Page addressing. Address $00nn.
 
 =cut
 
@@ -34,12 +36,12 @@ sub zero_page {
     my $self = shift;
     my $reg  = $self->registers;
 
-    $self->temp2( $self->memory->[ $reg->{ pc } + 1 ] );
-    $reg->{ pc } += 2;
-    $self->cycle_counter( $self->cycle_counter + 1 );
+    return $self->memory->[ $reg->{ pc }++ ];
 }
 
 =head2 zero_page_x( )
+
+Zero Page addressing, X indexed. $00nn + X.
 
 =cut
 
@@ -47,12 +49,12 @@ sub zero_page_x {
     my $self = shift;
     my $reg  = $self->registers;
 
-    $self->temp2( ( $self->memory->[ $reg->{ pc } + 1 ] + $reg->{ x } ) & 0xff );
-    $reg->{ pc } += 2;
-    $self->cycle_counter( $self->cycle_counter + 2 );
+    return ( $self->memory->[ $reg->{ pc }++ ] + $reg->{ x } ) & 0xff;
 }
 
 =head2 zero_page_y( )
+
+Zero Page addressing, Y indexed. $00nn + Y.
 
 =cut
 
@@ -60,16 +62,35 @@ sub zero_page_y {
     my $self = shift;
     my $reg  = $self->registers;
 
-    $self->temp2( ( $self->memory->[ $reg->{ pc } + 1 ] + $reg->{ y } ) & 0xff );
-    $reg->{ pc } += 2;
-    $self->cycle_counter( $self->cycle_counter + 2 );
+    return ( $self->memory->[ $reg->{ pc }++ ] + $reg->{ y } ) & 0xff;
 }
-
-*indirect = \&absolute;
 
 =head2 indirect( )
 
+Indirect Addressing. Special for JMP.
+
+=cut
+
+sub indirect {
+    my $self = shift;
+    my $reg  = $self->registers;
+    my $mem  = $self->memory;
+
+    my $lo = $mem->[ $reg->{ pc }++ ];
+    my $hi = $mem->[ $reg->{ pc }++ ];
+    my $temp = $self->make_word( $lo, $hi );
+    my $pcl = $mem->[ $temp ];
+    $lo++;
+    $temp = $self->make_word( $lo, $hi );
+    my $pch = $mem->[ $temp ];
+
+    return $self->make_word( $pcl, $pch );
+}
+
 =head2 absolute( )
+
+Absolute addressing. Fetches the next two memory slots and combines them into a
+16-bit word.
 
 =cut
 
@@ -78,35 +99,29 @@ sub absolute {
     my $reg  = $self->registers;
     my $mem  = $self->memory;
 
-    $self->temp2( $mem->[ $reg->{ pc } + 1 ] + ( $mem->[ $reg->{ pc } + 2 ] << 8 ) );
-
-    $reg->{ pc } += 3;
-    $self->cycle_counter( $self->cycle_counter + 2 );
+    return $self->make_word( $mem->[ $reg->{ pc }++ ], $mem->[ $reg->{ pc }++ ] );
 }
 
 =head2 absolute_x( )
+
+Absolute addressing, X indexed. Fetches the next two memory slots and combines them into a
+16-bit word, then adds X.
 
 =cut
 
 sub absolute_x {
     my $self = shift;
-    my $op   = shift;
     my $reg  = $self->registers;
     my $mem  = $self->memory;
 
-    $self->temp2( $mem->[ $reg->{ pc } + 1 ] + ( $mem->[ $reg->{ pc } + 2 ] << 8) + $reg->{ x } );
+    return $self->make_word( $mem->[ $reg->{ pc }++ ], $mem->[ $reg->{ pc }++ ] ) + $reg->{ x };
 
-    $reg->{ pc } += 3;
-    $self->cycle_counter( $self->cycle_counter + 2 );
-
-    unless( grep { $op == $_ } ( 0x1E, 0xDE, 0xFE, 0x5E, 0x3E, 0x7E ) ) {
-        if( ( ( $self->temp2 - $reg->{x} ) & 0xFF00 ) != ( $self->temp2 & 0xFF00 ) ) {
-            $self->cycle_counter( $self->cycle_counter + 1 );
-        }
-    }
 }
 
 =head2 absolute_y( )
+
+Absolute addressing, Y indexed. Fetches the next two memory slots and combines them into a
+16-bit word, then adds Y.
 
 =cut
 
@@ -115,17 +130,12 @@ sub absolute_y {
     my $mem  = $self->memory;
     my $reg  = $self->registers;
 
-    $self->temp2( $mem->[ $reg->{ pc } + 1 ] + ( $mem->[ $reg->{ pc } + 2 ] << 8) + $reg->{ y } );
-
-    $reg-> { pc } += 3;
-    $self->cycle_counter( $self->cycle_counter + 2 );
-
-    if( ( ( $self->temp2 - $reg->{ y } ) & 0xFF00 ) != ( $self->temp2 & 0xFF00 ) ) {
-        $self->cycle_counter( $self->cycle_counter + 1 );
-    }
+    return $self->make_word( $mem->[ $reg->{ pc }++ ], $mem->[ $reg->{ pc }++ ] ) + $reg->{ y };
 }
 
 =head2 indirect_x( )
+
+Indirect addressing, X indexed.
 
 =cut
 
@@ -134,32 +144,23 @@ sub indirect_x {
     my $mem  = $self->memory;
     my $reg  = $self->registers;
 
-    $self->temp2( $mem->[ ( $mem->[ $reg->{ pc } + 1 ] + $reg->{ x } ) & 0xFF ] + $mem->[ ( ( $mem->[ $reg->{ pc } + 1 ] + $reg->{ x } ) & 0xFF ) + 1] << 8 );
-
-    $reg->{ pc } += 2;
-    $self->cycle_counter( $self->cycle_counter + 4 );
+    my $hi = ( $self->memory->[ $reg->{ pc }++ ] + $reg->{ x } ) & 0xFF;
+    return $self->make_word( $self->memory->[ $hi ], $self->memory->[ $hi + 1 ] );
 }
 
 =head2 indirect_y( )
+
+Indirect addressing, Y indexed.
 
 =cut
 
 sub indirect_y {
     my $self = shift;
-    my $op   = shift;
     my $mem  = $self->memory;
     my $reg  = $self->registers;
 
-    $self->temp2( $mem->[ $mem->[ $reg->{ pc } + 1 ] ] + ( $mem->[ $mem->[ $reg->{ pc } + 2 ] + 1 ] << 8 ) + $reg->{ y } );
-
-    $reg->{ pc } += 2;
-    $self->cycle_counter( $self->cycle_counter + 3 );
-
-    unless( $op == 0x91 ) {
-        if( ( ( $self->temp2 - $reg->{ y } ) & 0xFF00 ) != ( $self->temp2 & 0xFF00 ) ) {
-            $self->cycle_counter( $self->cycle_counter + 1 );
-        }
-    }
+    my $hi = ( $self->memory->[ $reg->{ pc }++ ] + $reg->{ y } ) & 0xFF;
+    return $self->make_word( $self->memory->[ $hi ], $self->memory->[ $hi + 1 ] );
 }
 
 =head1 AUTHOR

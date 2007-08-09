@@ -77,8 +77,12 @@ sub RAM_write {
     if( $block == 0 ) {
         return $self->SUPER::RAM_write( ( $addr & 0x7FF ) => $data );
     }
+    elsif( $block == 1 ) {
+        warn "PPU";
+    }
     elsif( $block == 3 ) {
-        return $self->SUPER::RAM_write( $addr => $addr );
+        $self->SUPER::RAM_write( $addr => $data );
+        return $c->mapper->write( $addr => $data );
     }
     else {
         return $c->mapper->write( $addr => $data );

@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::TYA;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x98,
+use constant INSTRUCTIONS => {
+    0x98 => {
+        cycles => 2,
+        code   => \&tya,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,18 @@ CPU::Emulator::6502::Op::TYA - Transfer the Y register to the accumulator
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 tya( )
+
+Transfers the Y register to the accumulator.
 
 =cut
 
-sub implied {
+sub tya {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ acc } = $reg->{ y };
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ acc } & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-
-    $reg->{ pc }++;
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

@@ -3,11 +3,27 @@ package CPU::Emulator::6502::Op::INC;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    zero_page   => 0xE6,
-    zero_page_x => 0xF6,
-    absolute    => 0xEE,
-    absolute_x  => 0xFE,
+use constant INSTRUCTIONS => {
+    0xE6 => {
+        addressing => 'zero_page',
+        cycles => 5,
+        code => \&inc,
+    },
+    0xF6 => {
+        addressing => 'zero_page_x',
+        cycles => 6,
+        code => \&inc,
+    },
+    0xEE => {
+        addressing => 'absolute',
+        cycles => 6,
+        code => \&inc,
+    },
+    0xFE => {
+        addressing => 'absolute_x',
+        cycles => 7,
+        code => \&inc,
+    },
 };
 
 =head1 NAME
@@ -20,43 +36,20 @@ CPU::Emulator::6502::Op::INC - Increment by one
 
 =head1 METHODS
 
-=head2 zero_page( )
+=head2 inc( $addr )
 
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 do_op( )
+Increments the value at C<$addr> by 1.
 
 =cut
 
-sub absolute_x {
-    my $self = shift;
-    $self->cycle_counter( $self->cycle_counter + 1 );
-    do_op( $self );
-}
-
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-
-sub do_op {
+sub inc {
     my $self = shift;
     my $reg  = $self->registers;
 
-    $self->cycle_counter( $self->cycle_counter + 2 );
-    $self->temp( ( $self->memory->[ $self->temp2 ] + 1 ) & 0xff );
-
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $self->temp == 0;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
-
-    $self->RAM_write( $self->temp2 => $self->temp - 1 );
-    $self->RAM_write( $self->temp2 => $self->temp );
+    my $temp = $self->memory->[ shift ];
+    $temp++;
+    $self->RAM_write( $temp );
+    $self->set_nz( $temp );
 }
 
 =head1 AUTHOR

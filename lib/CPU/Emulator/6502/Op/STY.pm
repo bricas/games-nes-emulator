@@ -3,10 +3,22 @@ package CPU::Emulator::6502::Op::STY;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    zero_page   => 0x84,
-    zero_page_x => 0x94,
-    absolute    => 0x8C,
+use constant INSTRUCTIONS => {
+    0x84 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&sty,
+    },
+    0x94 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&sty,
+    },
+    0x8c => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&sty,
+    },
 };
 
 =head1 NAME
@@ -19,23 +31,15 @@ CPU::Emulator::6502::Op::STY - Store the Y register in memory
 
 =head1 METHODS
 
-=head2 zero_page( )
+=head2 sty( $addr )
 
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 do_op( )
+Stores the Y register in memory address C<$addr>.
 
 =cut
 
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-
-sub do_op {
+sub sty {
     my $self = shift;
-    $self->RAM_write( $self->temp2, $self->registers->{ y } );
+    $self->RAM_write( shift, $self->registers->{ y } );
 }
 
 =head1 AUTHOR

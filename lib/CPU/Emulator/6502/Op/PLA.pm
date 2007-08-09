@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::PLA;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x68,
+use constant INSTRUCTIONS => {
+    0x68 => {
+        cycles => 4,
+        code => \&pla,
+    }
 };
 
 =head1 NAME
@@ -17,25 +20,18 @@ CPU::Emulator::6502::Op::PLA - Pull accumulator from the stack
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 pla( )
+
+Pulls the accumulator from the stack.
 
 =cut
 
-sub implied {
+sub pla {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ sp }++;
-    $self->{ acc } = $self->memory->[ $reg->{ sp } + 0x100 ];
-    $reg->{ pc }++;
-
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ acc } & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-
-    $self->cycle_counter( $self->cycle_counter + 2 );
+    $reg->{ acc } = $self->pop_stack;
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

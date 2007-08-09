@@ -3,12 +3,31 @@ package CPU::Emulator::6502::Op::LSR;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    accumulator => 0x4A,
-    zero_page   => 0x46,
-    zero_page_x => 0x56,
-    absolute    => 0x4E,
-    absolute_x  => 0x5E
+use constant INSTRUCTIONS => {
+    0x4A => {
+        cycles => 2,
+        code => \&lsr_accumulator,
+    },
+    0x46 => {
+        addressing => 'zero_page',
+        cycles => 5,
+        code => \&lsr,
+    },
+    0x56 => {
+        addressing => 'zero_page_x',
+        cycles => 6,
+        code => \&lsr,
+    },
+    0x4E => {
+        addressing => 'absolute',
+        cycles => 6,
+        code => \&lsr,
+    },
+    0x5E => {
+        addressing => 'absolute_x',
+        cycles => 7,
+        code => \&lsr,
+    },
 };
 
 =head1 NAME
@@ -21,66 +40,45 @@ CPU::Emulator::6502::Op::LSR - Shift right
 
 =head1 METHODS
 
-=head2 accumulator( )
+=head2 lsr_accumulator( )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 do_op( )
+Shift the accumulator right.
 
 =cut
 
-sub accumulator {
+sub lsr_accumulator {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
-
+    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SZC;
     $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $reg->{ acc } & 1;
 
-    $reg->{ acc } = $reg->{ acc } >> 1;
-
+    $reg->{ acc } >>= 1;
 
     $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-
-    $reg->{ pc }++;
 }
+
+=head2 lsr( $addr )
+
+Shift data at C<$addr> right.
+
+=cut
     
-
-sub absolute_x {
+sub lsr {
     my $self = shift;
-    $self->cycle_counter( $self->cycle_counter + 3 );
-    do_op( $self );
-}
-
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-
-sub do_op {
-    my $self = shift;
+    my $addr = shift;
     my $reg = $self->registers;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
+    my $temp = $self->memory->[ $addr ];
 
-    $self->temp( $self->memory->[ $self->temp2 ] );
-    $self->RAM_write( $self->temp2 => $self->temp );
+    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SZC;
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $temp & 1;
 
-    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp & 1;
+    $temp >>= 1;
 
-    $self->temp( $self->temp >> 1 );
+    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $temp == 0;
 
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $self->temp == 0;
-    $self->RAM_write( $self->temp2 => $self->temp );
+    $self->RAM_write( $addr => $temp );
 }
 
 =head1 AUTHOR

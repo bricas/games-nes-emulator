@@ -3,15 +3,47 @@ package CPU::Emulator::6502::Op::LDA;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0xA9,
-    zero_page   => 0xA5,
-    zero_page_x => 0xB5,
-    absolute    => 0xAD,
-    absolute_x  => 0xBD,
-    absolute_y  => 0xB9,
-    indirect_x  => 0xA1,
-    indirect_y  => 0xB1
+use constant INSTRUCTIONS => {
+    0xA9 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&lda,
+    },
+    0xA5 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&lda,
+    },
+    0xB5 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&lda,
+    },
+    0xAD => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&lda,
+    },
+    0xBD => {
+        addressing => 'absolute_x',
+        cycles => 4,
+        code => \&lda,
+    },
+    0xB9 => {
+        addressing => 'absolute_y',
+        cycles => 4,
+        code => \&lda,
+    },
+    0xA1 => {
+        addressing => 'indirect_x',
+        cycles => 6,
+        code => \&lda,
+    },
+    0xB1 => {
+        addressing => 'indirect_y',
+        cycles => 5,
+        code => \&lda,
+    },
 };
 
 =head1 NAME
@@ -24,44 +56,17 @@ CPU::Emulator::6502::Op::LDA - Load accumulator from memory
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 lda( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 absolute_y( )
-
-=head2 indirect_x( )
-
-=head2 indirect_y( )
-
-=head2 do_op( )
+Loads the accumulator from C<$addr>.
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-*absolute_x = \&do_op;
-*absolute_y = \&do_op;
-*indirect_x = \&do_op;
-*indirect_y = \&do_op;
-
-sub do_op {
+sub lda {
     my $self = shift;
     my $reg = $self->registers;
-
-    $reg->{ acc } = $self->RAM_read( $self->temp2 ) & 0xff;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SZC;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ acc } & 0x80;
+    $reg->{ acc } = $self->RAM_read( shift ) & 0xff;
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

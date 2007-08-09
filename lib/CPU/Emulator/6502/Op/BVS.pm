@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::BVS;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    relative => 0x70,
+use constant INSTRUCTIONS => {
+    0x70 => {
+        cycles => 2,
+        code   => \&bvs,
+    }
 };
 
 =head1 NAME
@@ -17,32 +20,17 @@ CPU::Emulator::6502::Op::BVS - Branch on overflow set
 
 =head1 METHODS
 
-=head2 relative( )
+=head2 bvs( )
+
+Branches if the overflow flag is set.
 
 =cut
 
-sub relative {
+sub bvs {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->temp2( $reg->{ pc } );
-    $reg->{ pc } += 2;
-
-    if( ($reg->{status} & CPU::Emulator::6502::SET_OVERFLOW) ) {
-        if( $self->memory->[ $reg->{ pc } - 1 ] & 0x80 ) {
-            $reg->{ pc } -= (128 - ($self->memory->[ $reg->{pc} - 1 ] & 0x7f ));
-        }
-        else {
-            $reg->{ pc } += $self->memory->[ $reg->{ pc } - 1 ];
-        }
-
-        if( ( $reg->{ pc } & 0xFF00 ) == ( $self->temp2 & 0xff00 ) ) {
-            $self->cycle_counter( $self->cycle_counter + 1 );
-        }
-        else {
-            $self->cycle_counter( $self->cycle_counter + 2 );
-        }
-    }
+    $self->branch_if( $reg->{status} & CPU::Emulator::6502::SET_OVERFLOW );
 }
 
 =head1 AUTHOR

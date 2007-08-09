@@ -3,9 +3,17 @@ package CPU::Emulator::6502::Op::BIT;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    zero_page => 0x24,
-    absolute  => 0x2C,
+use constant INSTRUCTIONS => {
+    0x24 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&bit,
+    },
+    0x2C => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&bit,
+    },
 };
 
 =head1 NAME
@@ -22,22 +30,21 @@ CPU::Emulator::6502::Op::BIT - Bit test
 
 =head2 absolute( )
 
-=head2 do_op( )
+=head2 bit( $addr )
+
+Bit test with C<$addr>.
 
 =cut
 
-*zero_page = \&do_op;
-*absolute = \&do_op;
-
-sub do_op {
+sub bit {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->temp( $self->RAM_read( $self->temp2 ) );
+    my $temp = $self->RAM_read( shift );
 
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if ( $reg->{ acc } & $self->temp ) == 0;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW if $self->temp & 0x40;
+    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SOZ;
+    $self->set_nz( $temp );
+    $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW if $temp & 0x40;
 }
 
 =head1 AUTHOR

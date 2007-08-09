@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::SEC;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x38,
+use constant INSTRUCTIONS => {
+    0x38 => {
+        cycles => 2,
+        code => \&sec,
+    }
 };
 
 =head1 NAME
@@ -17,17 +20,17 @@ CPU::Emulator::6502::Op::SEC - Set the carry flag
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 sec( )
+
+Sets the carry flag.
 
 =cut
 
-sub implied {
+sub sec {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_CARRY;
-    $reg->{ status } += CPU::Emulator::6502::SET_CARRY;
-    $reg->{ pc }++;
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY;
 }       
 
 =head1 AUTHOR

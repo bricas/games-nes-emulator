@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::TSX;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xBA,
+use constant INSTRUCTIONS => {
+    0xBA => {
+        cycles => 2,
+        code   => \&tsx,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,18 @@ CPU::Emulator::6502::Op::TSX - Transfer the stack pointer to the X register
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 tsx( )
+
+Transfers the stack pointer to the X register.
 
 =cut
 
-sub implied {
+sub tsx {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ x } = $reg->{ sp };
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ x } & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ x } == 0;
-
-    $reg->{ pc }++;
+    $self->set_nz( $reg->{ x } );
 }
 
 =head1 AUTHOR

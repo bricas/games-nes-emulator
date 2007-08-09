@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::SEI;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x78,
+use constant INSTRUCTIONS => {
+    0x78 => {
+        cycles => 2,
+        code => \&sei,
+    }
 };
 
 =head1 NAME
@@ -17,17 +20,17 @@ CPU::Emulator::6502::Op::SEI - Set the interrupt disable bit
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 sei( )
+
+Sets the interrupt disable bit.
 
 =cut
 
-sub implied {
+sub sei {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_INTERRUPT;
-    $reg->{ status } += CPU::Emulator::6502::SET_INTERRUPT;
-    $reg->{ pc }++;
+    $reg->{ status } |= CPU::Emulator::6502::SET_INTERRUPT;
 }
 
 =head1 AUTHOR

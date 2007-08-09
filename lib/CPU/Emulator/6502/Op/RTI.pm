@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::RTI;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x40,
+use constant INSTRUCTIONS => {
+    0x40 => {
+        cycles => 6,
+        code => \&rti,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,20 @@ CPU::Emulator::6502::Op::RTI - Return from BRK/IRQ/NMI
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 rti( )
+
+Return from BRK/IRQ/NMI.
 
 =cut
 
-sub implied {
+sub rti {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ sp }++;
-    $reg->{ status } = $self->memory->[ $reg->{ sp } + 0x100 ];
-    $reg->{ sp }++;
-    $reg->{ pc } = $self->memory->[ $reg->{ sp } + 0x100 ];
-    $reg->{ sp }++;
-    $reg->{ pc } = $reg->{ pc } + ($self->memory->[ $reg->{ sp } + 0x100 ] << 8);
-
-    $self->cycle_counter( $self->cycle_counter + 4 );
+    $reg->{ status } = $self->pop_stack;
+    my $lo = $self->pop_stack;
+    my $hi = $self->pop_stack;
+    $reg->{ pc } = $self->make_word( $lo, $hi );
 }
 
 =head1 AUTHOR

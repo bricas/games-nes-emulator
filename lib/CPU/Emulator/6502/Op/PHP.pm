@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::PHP;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x08,
+use constant INSTRUCTIONS => {
+    0x08 => {
+        cycles => 3,
+        code   => \&php,
+    }
 };
 
 =head1 NAME
@@ -17,18 +20,17 @@ CPU::Emulator::6502::Op::PHP - Push processor status on the stack
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 php( )
+
+Pushes the processor status onto the stack.
 
 =cut
 
-sub implied {
+sub php {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->memory->[ $reg->{ sp } + 0x100 ] = ( $reg->{ status } | CPU::Emulator::6502::SET_BRK );
-    $reg->{ sp }--;
-    $reg->{ pc }++;
-    $self->cycle_counter( $self->cycle_counter + 1 );
+    $self->push_stack( $reg->{ status } | CPU::Emulator::6502::SET_BRK );
 }
 
 =head1 AUTHOR

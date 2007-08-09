@@ -3,12 +3,32 @@ package CPU::Emulator::6502::Op::LDY;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0xA0,
-    zero_page   => 0xA4,
-    zero_page_x => 0xB4,
-    absolute    => 0xAC,
-    absolute_x  => 0xBC
+use constant INSTRUCTIONS => {
+    0xA0 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&ldy,
+    },
+    0xA4 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&ldy,
+    },
+    0xB4 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&ldy,
+    },
+    0xAC => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&ldy,
+    },
+    0xBC => {
+        addressing => 'absolute_x',
+        cycles => 4,
+        code => \&ldy,
+    },
 };
 
 =head1 NAME
@@ -21,46 +41,18 @@ CPU::Emulator::6502::Op::LDY - Load Y register from memory
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 ldy( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 do_op( )
+Loads the Y register from C<$addr>.
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-
-sub absolute_x {
+sub ldy {
     my $self = shift;
     my $reg = $self->registers;
 
-    if( $self->temp2 - $reg->{ x } != ($self->temp2 & 0xff00) ) {
-        $self->cycle_counter( $self->cycle_counter + 1 );
-    }
-
-    do_op( $self );
-}
-
-sub do_op {
-    my $self = shift;
-    my $reg = $self->registers;
-
-    $reg->{ y } = $self->RAM_read( $self->temp2 ) & 0xff;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ y } == 0;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ y } & 0x80;
+    $reg->{ y } = $self->RAM_read( shift ) & 0xff;
+    $self->set_nz( $reg->{ y } );
 }
 
 =head1 AUTHOR

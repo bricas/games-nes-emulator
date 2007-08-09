@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::PLP;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x28,
+use constant INSTRUCTIONS => {
+    0x28 => {
+        cycles => 4,
+        code   => \&plp,
+    }
 };
 
 =head1 NAME
@@ -17,18 +20,19 @@ CPU::Emulator::6502::Op::PLP - Pull processor status from the stack
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 plp( )
+
+Pulls the processor status from the stack.
 
 =cut
 
-sub implied {
+sub plp {
     my $self = shift;
     my $reg = $self->registers;
 
-    $reg->{ sp }++;
-    $self->{ status } = $self->memory->[ $reg->{ sp } + 0x100 ] | CPU::Emulator::6502::SET_UNUSED;
-    $reg->{ pc }++;
-    $self->cycle_counter( $self->cycle_counter + 2 );
+    $self->{ status } = $self->pop_stack;
+    $self->{ status } |= CPU::Emulator::6502::SET_UNUSED;
+    $self->{ status } |= CPU::Emulator::6502::CLEAR_BRK;
 }
 
 =head1 AUTHOR

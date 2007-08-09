@@ -3,14 +3,42 @@ package CPU::Emulator::6502::Op::STA;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    zero_page   => 0x85,
-    zero_page_x => 0x95,
-    absolute    => 0x8D,
-    absolute_x  => 0x9D,
-    absolute_y  => 0x99,
-    indirect_x  => 0x81,
-    indirect_y  => 0x91
+use constant INSTRUCTIONS => {
+    0x80 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&sta,
+    },
+    0x95 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&sta,
+    },
+    0x8D => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&sta,
+    },
+    0x9D => {
+        addressing => 'absolute_x',
+        cycles => 5,
+        code => \&sta,
+    },
+    0x99 => {
+        addressing => 'absolute_y',
+        cycles => 5,
+        code => \&sta,
+    },
+    0x81 => {
+        addressing => 'indirect_x',
+        cycles => 6,
+        code => \&sta,
+    },
+    0x91 => {
+        addressing => 'indirect_y',
+        cycles => 6,
+        code => \&sta,
+    },
 };
 
 =head1 NAME
@@ -23,41 +51,15 @@ CPU::Emulator::6502::Op::STA - Store accumulator in memory
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 sta( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 absolute_y( )
-
-=head2 indirect_x( )
-
-=head2 indirect_y( )
-
-=head2 do_op( )
+Stores the accumulator in memory address C<$addr>.
 
 =cut
 
-*absolute_x = \&indirect_y;
-*absolute_y = \&indirect_y;
-
-sub indirect_y {
+sub sta {
     my( $self ) = @_;
-    $self->cycle_counter( $self->cycle_counter + 1 );
-}
-
-*zero_page = \&indirect_x;
-*zero_page_x = \&indirect_x;
-*absolute = \&indirect_x;
-
-sub indirect_x {
-    my( $self ) = @_;
-    $self->RAM_write( $self->temp2, $self->registers->{ acc } );
+    $self->RAM_write( shift, $self->registers->{ acc } );
 }
 
 =head1 AUTHOR

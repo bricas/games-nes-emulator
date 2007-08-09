@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::CLI;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x58,
+use constant INSTRUCTIONS => {
+    0x58 => {
+        cycles => 2,
+        code => \&cli,
+    }
 };
 
 =head1 NAME
@@ -17,15 +20,17 @@ CPU::Emulator::6502::Op::CLI - Clear the interrupt disable bit
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 cli( )
+
+Clears the interrupt disable bit.
 
 =cut
 
-sub implied {
+sub cli {
     my $self = shift;
     my $reg = $self->registers;
+
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_INTERRUPT;
-    $reg->{ pc }++;
 }
 
 =head1 AUTHOR

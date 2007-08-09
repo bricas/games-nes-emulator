@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::TXA;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x8A,
+use constant INSTRUCTIONS => {
+    0x8A => {
+        cycles => 2,
+        code   => \&txa,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,18 @@ CPU::Emulator::6502::Op::TXA - Transfer the X register to the accumulator
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 txa( )
+
+Transfers the X registers to the accumulator.
 
 =cut
 
-sub implied {
+sub txa {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ acc } = $reg->{ x };
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ acc } & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ acc } == 0;
-
-    $reg->{ pc }++;
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

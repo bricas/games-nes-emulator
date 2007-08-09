@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::BEQ;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    relative => 0xF0,
+use constant INSTRUCTIONS => {
+    0xF0 => {
+        cycles => 2,
+        code   => \&beq,
+    }
 };
 
 =head1 NAME
@@ -17,32 +20,17 @@ CPU::Emulator::6502::Op::BEQ - Branch on result zero
 
 =head1 METHODS
 
-=head2 relative( )
+=head2 beq( )
+
+Branches when the result is zero.
 
 =cut
 
-sub relative {
+sub beq {
     my $self = shift;
     my $reg = $self->registers;
 
-    $self->temp2( $reg->{ pc } );
-    $reg->{ pc } += 2;
-
-    if( ($reg->{status} & CPU::Emulator::6502::SET_ZERO) ) {
-        if( $self->memory->[ $reg->{ pc } - 1 ] & 0x80 ) {
-            $reg->{ pc } -= (128 - ($self->memory->[ $reg->{pc} - 1 ] & 0x7f ));
-        }
-        else {
-            $reg->{ pc } += $self->memory->[ $reg->{ pc } - 1 ];
-        }
-
-        if( ( $reg->{ pc } & 0xFF00 ) == ( $self->temp2 & 0xff00 ) ) {
-            $self->cycle_counter( $self->cycle_counter + 1 );
-        }
-        else {
-            $self->cycle_counter( $self->cycle_counter + 2 );
-        }
-    }
+    $self->branch_if( $reg->{status} & CPU::Emulator::6502::SET_ZERO );
 }
 
 =head1 AUTHOR

@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::TAX;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xAA,
+use constant INSTRUCTIONS => {
+    0xAA => {
+        cycles => 2,
+        code => \&tax,
+    }
 };
 
 =head1 NAME
@@ -17,22 +20,19 @@ CPU::Emulator::6502::Op::TAX - Transfer the accumulator to the X register
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 tax( )
+
+Transfers the accumulator to the X register.
 
 =cut
 
-sub implied {
+sub tax {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ x } = $reg->{ acc };
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SIGN;
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZERO;
 
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $reg->{ x } & 0x80;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if $reg->{ x } == 0;
-
-    $reg->{ pc }++;
+    $self->set_nz( $reg->{ x } );
 }
 
 =head1 AUTHOR

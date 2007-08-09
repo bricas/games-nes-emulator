@@ -3,8 +3,12 @@ package CPU::Emulator::6502::Op::JSR;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    absolute => 0x20
+use constant INSTRUCTIONS => {
+    0x20 => {
+        addressing => 'absolute',
+        cycles     => 6,
+        code => \&jsr,
+    }
 };
 
 =head1 NAME
@@ -17,21 +21,22 @@ CPU::Emulator::6502::Op::JSR - Jump and save the return address
 
 =head1 METHODS
 
-=head2 absolute( )
+=head2 jsr( $addr )
+
+Save return address and jump to C<$addr>.
 
 =cut
 
-sub absolute {
+sub jsr {
     my $self = shift;
+    my $addr = shift;
     my $reg = $self->registers;
     my $mem = $self->memory;
 
-    $mem->[ $reg->{ sp } + 0x100 ] = (($reg->{pc} + 2) & 0xff00) >> 8;
-    $mem->[ $reg->{ sp } - 1 + 0x100 ] = ($reg->{pc} + 2) & 0xff;
-    $reg->{ sp } -= 2;
-    $self->temp( $mem->[ $reg->{ pc } + 1 ] + ( $mem->[ $reg->{pc} + 2 ] << 8 ) );
-    $reg->{ pc } = $self->temp;
-    $self->cycle_counter( $self->cycle_counter + 2 );
+    $reg->{ pc }--;
+    $self->push_stack( $self->hi_byte( $reg->{ pc } ) );
+    $self->push_stack( $self->lo_byte( $reg->{ pc } ) );
+    $reg->{ pc } = $addr;
 }
 
 =head1 AUTHOR

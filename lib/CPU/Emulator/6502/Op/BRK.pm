@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::BRK;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x00,
+use constant INSTRUCTIONS => {
+    0x00 => {
+        cycles => 7,
+        code => \&brk,
+    }
 };
 
 =head1 NAME
@@ -17,28 +20,25 @@ CPU::Emulator::6502::Op::BRK - Force break
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 brk( )
+
+Force break.
 
 =cut
 
-sub implied {
+sub brk {
     my $self = shift;
     my $reg = $self->registers;
     my $mem = $self->memory;
 
-    $reg->{ pc } += 2;
+    $self->push_stack( $self->hi_byte( $reg->{ pc } + 1 ) );
+    $self->push_stack( $self->lo_byte( $reg->{ pc } + 1 ) );
 
-    $mem->[ $reg->{ pc } + 0x100 ] = ( $reg->{ pc } & 0xff00 ) >> 8;
+    $reg->{ status } |= CPU::Emulator::6502::SET_BRK;
 
-    $mem->[ $reg->{ sp } - 1 + 0x100 ] = $reg->{ pc } & 0xff;
-    $mem->[ $reg->{ sp } - 2 + 0x100 ] = $reg->{ status } | CPU::Emulator::6502::SET_BRK;
+    $self->push_stack( $reg->{ status } );
 
-    $reg->{ sp } -= 3;
-
-    $reg->{ status } |= CPU::Emulator::6502::SET_INTERRUPT;
-    $reg->{ pc } = $mem->[ 0xfffe ] + ( $mem->[ 0xffff ] << 8 );
-
-    $self->cycle_counter( $self->cycle_counter + 5 );
+    $reg->{ pc } = $self->make_word( $mem->[ 0xfffe ], $mem->[ 0xffff ] );
 }
 
 =head1 AUTHOR

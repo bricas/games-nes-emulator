@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::TXS;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0x9A,
+use constant INSTRUCTIONS => {
+    0x9A => {
+        cycles => 2,
+        code   => \&txs,
+    }
 };
 
 =head1 NAME
@@ -17,16 +20,17 @@ CPU::Emulator::6502::Op::TXS - Transfer the X register to the stack pointer
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 txs( )
+
+Transfers the X registers to the stack pointer.
 
 =cut
 
-sub implied {
+sub txs {
     my $self = shift;
     my $reg = $self->registers;
 
     $reg->{ sp } = $reg->{ x };
-    $reg->{ pc }++;
 }
 
 =head1 AUTHOR

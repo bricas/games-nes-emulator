@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::NOP;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xEA,
+use constant INSTRUCTIONS => {
+    0xEA => {
+        cycles => 2,
+        code => \&nop,
+    }
 };
 
 =head1 NAME
@@ -17,13 +20,13 @@ CPU::Emulator::6502::Op::NOP - No operation
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 nop( )
+
+No operation.
 
 =cut
 
-sub implied {
-    my $self = shift;
-    $self->registers->{ pc }++;
+sub nop {
 }
 
 =head1 AUTHOR

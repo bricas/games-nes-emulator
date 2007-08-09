@@ -3,15 +3,47 @@ package CPU::Emulator::6502::Op::SBC;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    immediate   => 0xE9,
-    zero_page   => 0xE5,
-    zero_page_x => 0xF5,
-    absolute    => 0xED,
-    absolute_x  => 0xFD,
-    absolute_y  => 0xF9,
-    indirect_x  => 0xE1,
-    indirect_y  => 0xF1
+use constant INSTRUCTIONS => {
+    0xE9 => {
+        addressing => 'immediate',
+        cycles => 2,
+        code => \&sbc,
+    },
+    0xE5 => {
+        addressing => 'zero_page',
+        cycles => 3,
+        code => \&sbc,
+    },
+    0xF5 => {
+        addressing => 'zero_page_x',
+        cycles => 4,
+        code => \&sbc,
+    },
+    0xED => {
+        addressing => 'absolute',
+        cycles => 4,
+        code => \&sbc,
+    },
+    0xFD => {
+        addressing => 'absolute_x',
+        cycles => 4,
+        code => \&sbc,
+    },
+    0xF9 => {
+        addressing => 'absolute_y',
+        cycles => 4,
+        code => \&sbc,
+    },
+    0xE1 => {
+        addressing => 'indirect_x',
+        cycles => 6,
+        code => \&sbc,
+    },
+    0xF1 => {
+        addressing => 'indirect_y',
+        cycles => 5,
+        code => \&sbc,
+    },
 };
 
 =head1 NAME
@@ -24,53 +56,30 @@ CPU::Emulator::6502::Op::SBC - Subtract memory from accumulator with borrow
 
 =head1 METHODS
 
-=head2 immediate( )
+=head2 sbc( $addr )
 
-=head2 zero_page( )
-
-=head2 zero_page_x( )
-
-=head2 absolute( )
-
-=head2 absolute_x( )
-
-=head2 absolute_y( )
-
-=head2 indirect_x( )
-
-=head2 indirect_y( )
-
-=head2 do_op( )
+Subtract C<$addr> from the accumulator with borrow.
 
 =cut
 
-*immediate = \&do_op;
-*zero_page = \&do_op;
-*zero_page_x = \&do_op;
-*absolute = \&do_op;
-*absolute_x = \&do_op;
-*absolute_y = \&do_op;
-*indirect_x = \&do_op;
-*indirect_y = \&do_op;
-
-sub do_op {
+sub sbc {
     my $self = shift;
     my $reg  = $self->registers;
 
-    $self->temp( $reg->{ acc } - $self->memory->[ $self->temp2 ] );
-    $self->temp( $self->temp - 1 ) if !$reg->{ status } & CPU::Emulator::6502::SET_CARRY;
+    my $val = $self->memory->[ shift ];
+    my $temp = $reg->{ acc } - $val;
+    $temp -= 1 if !$reg->{ status } & CPU::Emulator::6502::SET_CARRY;
 
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZOCS;
-    $reg->{ status } |= CPU::Emulator::6502::SET_ZERO if !($self->temp & 0xff);
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $temp < 0x100;
                                 
-    if( (( $reg->{ acc } ^ $self->memory->[ $self->temp2 ] ) & 0x80) and (($reg->{acc} ^ $self->temp ) & 0x80) ) {
+    if( (( $reg->{ acc } ^ $val ) & 0x80) and (($reg->{acc} ^ $temp ) & 0x80) ) {
         $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW;
     }
 
-    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp < 0x100;
-    $reg->{ status } |= CPU::Emulator::6502::SET_SIGN if $self->temp & 0x80;
-
     $reg->{ acc } = $self->temp & 0xff; 
+
+    $self->set_nz( $reg->{ acc } );
 }
 
 =head1 AUTHOR

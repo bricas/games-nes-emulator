@@ -3,8 +3,11 @@ package CPU::Emulator::6502::Op::CLV;
 use strict;
 use warnings;
 
-use constant ADDRESSING => {
-    implied => 0xB8,
+use constant INSTRUCTIONS => {
+    0xB8 => {
+        cycles => 2,
+        code => \&clv
+    }
 };
 
 =head1 NAME
@@ -17,15 +20,17 @@ CPU::Emulator::6502::Op::CLV - Clear overflow flag
 
 =head1 METHODS
 
-=head2 implied( )
+=head2 clv( )
+
+Clears the overflow flag.
 
 =cut
 
-sub implied {
+sub clv {
     my $self = shift;
     my $reg = $self->registers;
+
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_OVERFLOW;
-    $reg->{ pc }++;
 }
 
 =head1 AUTHOR
