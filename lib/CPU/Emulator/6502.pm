@@ -381,15 +381,14 @@ sub branch_if {
     my $self = shift;
     my $reg  = $self->registers;
 
-    # branch or not
-    if( !shift ) {
-        $reg->{ pc }++;
-        return;
-    }
+    $reg->{ pc }++;
 
-    my $old_pc = $reg->{ pc } - 1;
+    # branch or not
+    return if !shift;
+
+    my $old_pc = $reg->{ pc } - 2;
     # address to branch to
-    my $data = $self->memory->[ $reg->{ pc } ];
+    my $data = $self->memory->[ $reg->{ pc } - 1 ];
 
     if( $data & 0x80 ) {
         $reg->{ pc } -= ( 128 - ( $data & 0x7f ) );
