@@ -22,6 +22,13 @@ Games::NES::Emulator::APU - NES Audio Processing Unit
 sub init {
 }
 
+=head2 read( )
+
+=cut
+
+sub read {
+}
+
 =head1 AUTHOR
 
 Brian Cassidy E<lt>bricas@cpan.orgE<gt>

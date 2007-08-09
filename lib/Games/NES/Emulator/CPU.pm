@@ -71,7 +71,18 @@ sub RAM_read {
         }
     }
     elsif( $block == 2 ) {
-        # TODO cases for block 2
+        if( ( $addr & 0x3F40 ) == 0 ) {
+            if( $addr == 0x4016 ) {
+                return $c->inputs->[ 0 ]->poll;
+            }
+            elsif( $addr == 0x4017 ) {
+                return $c->inputs->[ 1 ]->poll;
+            }
+
+            return $c->apu->read( $addr );
+        }
+
+        return $c->mapper->read( $addr );
     }
     elsif( $block == 3 ) {
         return $self->SUPER::RAM_read( $addr );
