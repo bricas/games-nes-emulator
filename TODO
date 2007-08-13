@@ -1,0 +1,4 @@
++ write a series of tests for the 6502 instruction set
++ change read & write if {} elsif {}, etc setup to a hash lookup with closures
++ change swapping to a list of pointers -- swapping can occur many times per
+  frame. this will be hella slow.

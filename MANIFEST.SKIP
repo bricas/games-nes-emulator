@@ -28,3 +28,6 @@
 
 # No tarballs!
 \.gz$
+
+# ignore TODO
+^TODO$
