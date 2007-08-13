@@ -1,5 +1,8 @@
 Revision history for Perl extension Games::NES::Emulator.
 
+0.04  XXX 2007
+    - removed left-over references to $self->temp
+
 0.03  Mon Aug 13 2007
     - Major refactoring of 6502 instructions.
     - Util methods added:
