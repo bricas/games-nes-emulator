@@ -77,7 +77,7 @@ sub sbc {
         $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW;
     }
 
-    $reg->{ acc } = $self->temp & 0xff; 
+    $reg->{ acc } = $temp & 0xff; 
 
     $self->set_nz( $reg->{ acc } );
 }

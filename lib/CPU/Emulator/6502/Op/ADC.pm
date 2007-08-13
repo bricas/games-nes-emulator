@@ -69,16 +69,16 @@ sub adc {
 
     my $val  = $mem->[ shift ];
     my $temp = $reg->{ acc } + $val;
-    $temp += 1 if $reg->status & CPU::Emulator::6502::SET_CARRY;
+    $temp += 1 if $reg->{ status } & CPU::Emulator::6502::SET_CARRY;
 
     $reg->{ status } &= CPU::Emulator::6502::CLEAR_ZOCS;
-    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $self->temp > 0xFF;
+    $reg->{ status } |= CPU::Emulator::6502::SET_CARRY if $temp > 0xFF;
 
     if( !( ( $reg->{ acc } ^ $val ) & 0x80 ) && ( ( $reg->{ acc } ^ $temp ) & 0x80 ) ) {
         $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW;
     }
 
-    $reg->{ acc } = $self->temp & 0xFF;
+    $reg->{ acc } = $temp & 0xFF;
 
     $self->set_nz( $reg->{ acc } );
 }
