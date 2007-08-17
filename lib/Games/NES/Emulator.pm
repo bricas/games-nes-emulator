@@ -13,7 +13,7 @@ use Games::NES::Emulator::Input; # controller
 
 our $VERSION = '0.04';
 
-__PACKAGE__->mk_accessors( qw( rom cpu apu ppu mapper inputs running ) );
+__PACKAGE__->mk_accessors( qw( rom cpu apu ppu inputs running ) );
 
 =head1 NAME
 
@@ -94,7 +94,7 @@ sub load_rom {
         die "Mapper $mapperid not supported.";
     }
 
-    $self->mapper( $class->new )->init( $self );
+    $self->cpu->mapper( $class->new )->init( $self );
     $self->cpu->interrupt_line( $self->cpu->interrupt_line | $self->cpu->RESET );
 }
 

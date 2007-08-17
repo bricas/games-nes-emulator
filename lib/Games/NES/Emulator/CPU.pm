@@ -6,8 +6,9 @@ use warnings;
 use base qw( CPU::Emulator::6502 );
 
 use Scalar::Util ();
+use Games::NES::Emulator::Mapper;
 
-__PACKAGE__->mk_accessors( 'context' );
+__PACKAGE__->mk_accessors( qw( context mapper ) );
 
 =head1 NAME
 
@@ -30,6 +31,7 @@ sub init {
 
     $self->SUPER::init( @_ );
     $self->context( $emu );
+    $self->mapper( Games::NES::Emulator::Mapper->new )->init();
     $self->interrupt_line( 0 );
 
     $self->memory( [ ( 0 ) x ( 0xFFFF + 1 ) ] );
@@ -82,13 +84,13 @@ sub RAM_read {
             return $c->apu->read( $addr );
         }
 
-        return $c->mapper->read( $addr );
+        return $self->mapper->read( $addr );
     }
     elsif( $block == 3 ) {
         return $self->SUPER::RAM_read( $addr );
     }
     else {
-        return $c->mapper->read( $addr );
+        return $self->mapper->read( $addr );
     }
 }
 
@@ -159,10 +161,10 @@ sub RAM_write {
     }
     elsif( $block == 3 ) {
         $self->SUPER::RAM_write( $addr => $data );
-        return $c->mapper->write( $addr => $data );
+        return $self->mapper->write( $addr => $data );
     }
     else {
-        return $c->mapper->write( $addr => $data );
+        return $self->mapper->write( $addr => $data );
     }
 
 }
