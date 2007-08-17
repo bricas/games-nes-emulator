@@ -115,7 +115,6 @@ sub absolute_x {
     my $mem  = $self->memory;
 
     return $self->make_word( $mem->[ $reg->{ pc }++ ], $mem->[ $reg->{ pc }++ ] ) + $reg->{ x };
-
 }
 
 =head2 absolute_y( )

@@ -330,14 +330,42 @@ Sets the Sign and Zero status flags based on C<$value>.
 sub set_nz {
     my $self = shift;
     my $value = shift;
+    $self->set_n( $value );
+    $self->set_z( $value );
+}
+
+=head2 set_n( $value )
+
+Sets the Sign status flag based on C<$value>.
+
+=cut
+
+sub set_n {
+    my $self = shift;
+    my $value = shift;
     my $reg = $self->registers;
 
-    $reg->{ status } &= CLEAR_ZS;
+    $reg->{ status } &= CLEAR_SIGN;
 
     if( $value & 0x80 ) {
         $reg->{ status } |= SET_SIGN;
     }
-    elsif( $value == 0 ) {
+}
+
+=head2 set_z( $value )
+
+Sets the Zero status flag based on C<$value>.
+
+=cut
+
+sub set_z {
+    my $self = shift;
+    my $value = shift;
+    my $reg = $self->registers;
+
+    $reg->{ status } &= CLEAR_ZERO;
+
+    if( $value == 0 ) {
         $reg->{ status } |= SET_ZERO;
     }
 }

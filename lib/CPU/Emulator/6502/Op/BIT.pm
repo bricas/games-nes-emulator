@@ -41,9 +41,11 @@ sub bit {
     my $reg = $self->registers;
 
     my $temp = $self->RAM_read( shift );
+    my $result = $reg->{ acc } & $temp;
 
-    $reg->{ status } &= CPU::Emulator::6502::CLEAR_SOZ;
-    $self->set_nz( $temp );
+    $self->set_z( $result );
+    $self->set_n( $temp );
+    $reg->{ status } &= CPU::Emulator::6502::CLEAR_OVERFLOW;
     $reg->{ status } |= CPU::Emulator::6502::SET_OVERFLOW if $temp & 0x40;
 }
 
